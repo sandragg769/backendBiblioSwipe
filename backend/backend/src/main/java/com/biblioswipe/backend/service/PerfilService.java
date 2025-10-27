@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.biblioswipe.backend.model.Perfil;
 import com.biblioswipe.backend.repository.PerfilRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class PerfilService {
     @Autowired
     private PerfilRepository perfilRepository;

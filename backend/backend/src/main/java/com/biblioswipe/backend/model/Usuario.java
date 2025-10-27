@@ -25,6 +25,7 @@ public class Usuario {
 
     // relación 1:1 con la biblioteca
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JoinColumn(name = "perfil_id")
     private Biblioteca biblioteca;
 
     // relación N:M con categorias

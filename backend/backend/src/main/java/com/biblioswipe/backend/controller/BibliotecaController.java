@@ -108,4 +108,5 @@ public class BibliotecaController {
     public ResponseEntity<Biblioteca> removeLibroDeRecomendados(@PathVariable Long id, @PathVariable Long libroId) {
         return ResponseEntity.ok(bibliotecaService.removeLibroDeRecomendados(id, libroId));
     }
+
 }

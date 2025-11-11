@@ -2,6 +2,7 @@ package com.biblioswipe.backend.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -19,6 +20,8 @@ public class Perfil {
     // relación usuario 1:1
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    //ppr la referencia circular
+    @JsonBackReference
     private Usuario usuario;
 
     // constructores

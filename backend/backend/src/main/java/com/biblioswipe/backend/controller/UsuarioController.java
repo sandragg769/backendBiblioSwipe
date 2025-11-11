@@ -13,7 +13,7 @@ import java.util.Set;
 
 //controller es para exponer de los endpoints 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/usuarios")
 @CrossOrigin(origins = "*")
 public class UsuarioController {
 

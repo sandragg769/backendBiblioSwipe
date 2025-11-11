@@ -3,6 +3,8 @@ package com.biblioswipe.backend.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,6 +25,8 @@ public class Biblioteca {
     // relación 1:1 con usuario
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
+    // indica que este lado será ignorado durante la serialización
+    @JsonBackReference
     private Usuario usuario;
 
     // tres listas de libros (relación N:M con tabla intermedia)

@@ -3,6 +3,7 @@ package com.biblioswipe.backend.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 //representa los datos y las entidades
@@ -21,11 +22,15 @@ public class Usuario {
 
     // relación 1:1 con perfil
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    //para el error del get (referencia circular)
+    @JsonManagedReference
     private Perfil perfil;
 
     // relación 1:1 con la biblioteca
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JoinColumn(name = "perfil_id")
+    // indica que este lado se serializará
+    @JsonManagedReference
     private Biblioteca biblioteca;
 
     // relación N:M con categorias

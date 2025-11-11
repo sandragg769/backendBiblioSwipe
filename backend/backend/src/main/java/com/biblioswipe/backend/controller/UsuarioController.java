@@ -63,7 +63,7 @@ public class UsuarioController {
         return usuarioService.getUsuarioById(id)
                 .map(existing -> {
                     usuario.setUsuario_id(id);
-                    return ResponseEntity.ok(usuarioService.createUsuario(usuario));
+                    return ResponseEntity.ok(usuarioService.updateUsuario(usuario));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

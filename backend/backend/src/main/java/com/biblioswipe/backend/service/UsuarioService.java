@@ -85,12 +85,17 @@ public class UsuarioService {
     }
 
     // METODOS LÓGICA DE NEGOCIO
-    // agregar un usuario a lista de usuaros favoritos de un usuario
+    // agregar un usuario a lista de usuarios favoritos de un usuario
     public Usuario agregarFavorito(Long usuarioId, Long favoritoId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         Usuario favorito = usuarioRepository.findById(favoritoId)
                 .orElseThrow(() -> new RuntimeException("Usuario favorito no encontrado"));
+
+        if (usuario.getUsuariosFavoritos().contains(favorito)) {
+            throw new RuntimeException("El usuario ya está en favoritos");
+        }
 
         usuario.getUsuariosFavoritos().add(favorito);
         return usuarioRepository.save(usuario);

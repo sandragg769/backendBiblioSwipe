@@ -3,6 +3,8 @@ package com.biblioswipe.backend.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,10 +24,12 @@ public class Categoria {
 
     // relación 1:N con libro (muchos libros pueden tener la misma categoría)
     @OneToMany(mappedBy = "categoria")
+    @JsonManagedReference // controla la serialización
     private Set<Libro> libros = new HashSet<>();
 
     // relación N:M con usuario
     @ManyToMany(mappedBy = "categorias")
+    @JsonBackReference
     private Set<Usuario> usuarios = new HashSet<>();
 
     // constructor

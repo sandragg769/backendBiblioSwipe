@@ -3,6 +3,7 @@ package com.biblioswipe.backend.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,17 +27,21 @@ public class Libro {
     // relacion 1:N con categoria (solo uan categoría el libro)
     @ManyToOne
     @JoinColumn(name = "categoria_id")
+    @JsonBackReference // evita bucle con Categoria
     private Categoria categoria;
 
     // relaciones N:M con biblioteca (en biblioteca hay tres listas de libros
     // también)
     @ManyToMany(mappedBy = "librosRecomendados")
+    @JsonBackReference //evita recursividad circular entre Libro y Biblioteca
     private Set<Biblioteca> bibliotecasRecomendados = new HashSet<>();
 
     @ManyToMany(mappedBy = "librosLeidos")
+    @JsonBackReference
     private Set<Biblioteca> bibliotecasLeidos = new HashSet<>();
 
     @ManyToMany(mappedBy = "librosFuturasLecturas")
+    @JsonBackReference
     private Set<Biblioteca> bibliotecasFuturasLecturas = new HashSet<>();
 
     // constructores

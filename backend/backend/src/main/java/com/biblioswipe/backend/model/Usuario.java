@@ -3,6 +3,7 @@ package com.biblioswipe.backend.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -22,25 +23,25 @@ public class Usuario {
 
     // relación 1:1 con perfil
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    //para el error del get (referencia circular)
-    @JsonManagedReference
+    @JsonManagedReference // controla la serialización del perfil
     private Perfil perfil;
 
     // relación 1:1 con la biblioteca
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JoinColumn(name = "perfil_id")
-    // indica que este lado se serializará
-    @JsonManagedReference
+    @JsonManagedReference // controla la serialización de la biblioteca
     private Biblioteca biblioteca;
 
     // relación N:M con categorias
     @ManyToMany
     @JoinTable(name = "usuario_categoria", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
+    @JsonManagedReference // evita bucles con categoria
     private Set<Categoria> categorias = new HashSet<>();
 
     // Relación 1:N reflexiva (usuarios favoritos)
     @ManyToMany
     @JoinTable(name = "usuarios_favoritos", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "favorito_id"))
+    @JsonManagedReference(value = "usuario-favoritos")
     private Set<Usuario> usuariosFavoritos = new HashSet<>();
 
     // constructores

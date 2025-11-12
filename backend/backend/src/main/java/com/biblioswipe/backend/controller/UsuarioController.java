@@ -60,13 +60,18 @@ public class UsuarioController {
     // Actualizar usuario completo
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
-        return usuarioService.getUsuarioById(id)
-                .map(existing -> {
-                    usuario.setUsuario_id(id);
-                    return ResponseEntity.ok(usuarioService.updateUsuario(usuario));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            Usuario actualizado = usuarioService.updateUsuario(id, usuario);
+            return ResponseEntity.ok(actualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
+
+
+
+
+
 
     // DELETE por ID
     // Eliminar usuario

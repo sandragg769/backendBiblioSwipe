@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,15 +34,18 @@ public class Libro {
     // relaciones N:M con biblioteca (en biblioteca hay tres listas de libros
     // también)
     @ManyToMany(mappedBy = "librosRecomendados")
-    @JsonBackReference //evita recursividad circular entre Libro y Biblioteca
+    //@JsonBackReference(value = "biblioteca-recomendados") //evita recursividad circular entre Libro y Biblioteca
+    @JsonIgnore
     private Set<Biblioteca> bibliotecasRecomendados = new HashSet<>();
 
     @ManyToMany(mappedBy = "librosLeidos")
-    @JsonBackReference
+    //@JsonBackReference(value = "biblioteca-leidos")
+    @JsonIgnore
     private Set<Biblioteca> bibliotecasLeidos = new HashSet<>();
 
     @ManyToMany(mappedBy = "librosFuturasLecturas")
-    @JsonBackReference
+    //@JsonBackReference(value = "biblioteca-futuras")
+    @JsonIgnore
     private Set<Biblioteca> bibliotecasFuturasLecturas = new HashSet<>();
 
     // constructores

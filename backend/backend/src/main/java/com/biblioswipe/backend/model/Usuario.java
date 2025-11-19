@@ -3,10 +3,13 @@ package com.biblioswipe.backend.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "usuario_id"
+)
 //representa los datos y las entidades
 @Entity
 @Table(name = "usuarios")
@@ -23,26 +26,31 @@ public class Usuario {
 
     // relación 1:1 con perfil
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonManagedReference // controla la serialización del perfil
+    @JsonBackReference(value = "usuario-perfil") // controla la serialización del perfil
     private Perfil perfil;
 
     // relación 1:1 con la biblioteca
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JoinColumn(name = "perfil_id")
-    @JsonManagedReference // controla la serialización de la biblioteca
+    @JsonBackReference(value = "usuario-biblioteca") // controla la serialización de la biblioteca
     private Biblioteca biblioteca;
 
     // relación N:M con categorias
     @ManyToMany
     @JoinTable(name = "usuario_categoria", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
-    @JsonManagedReference // evita bucles con categoria
+    //@JsonManagedReference(value = "usuario-categorias") // evita bucles con categoria
+    @JsonIgnore
     private Set<Categoria> categorias = new HashSet<>();
 
     // Relación 1:N reflexiva (usuarios favoritos)
     @ManyToMany
     @JoinTable(name = "usuarios_favoritos", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "favorito_id"))
-    @JsonManagedReference(value = "usuario-favoritos")
+    //@JsonManagedReference(value = "usuario-favoritos")
     private Set<Usuario> usuariosFavoritos = new HashSet<>();
+
+    @ManyToMany(mappedBy = "usuariosFavoritos")
+    //@JsonBackReference(value = "usuario-favoritos")
+    private Set<Usuario> esFavoritoDe = new HashSet<>();
 
     // constructores
     public Usuario() {
@@ -110,4 +118,11 @@ public class Usuario {
         this.usuariosFavoritos = usuariosFavoritos;
     }
 
+    public Set<Usuario> getEsFavoritoDe() {
+        return esFavoritoDe;
+    }
+
+    public void setEsFavoritoDe(Set<Usuario> esFavoritoDe) {
+        this.esFavoritoDe = esFavoritoDe;
+    }
 }

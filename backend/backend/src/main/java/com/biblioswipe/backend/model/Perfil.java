@@ -3,6 +3,7 @@ package com.biblioswipe.backend.model;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -21,7 +22,7 @@ public class Perfil {
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     //ppr la referencia circular
-    @JsonBackReference // evita bucle con Usuario
+    @JsonManagedReference(value = "usuario-perfil") // evita bucle con Usuario
     private Usuario usuario;
 
     // constructores

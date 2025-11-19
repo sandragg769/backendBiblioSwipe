@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +30,8 @@ public class Categoria {
 
     // relación N:M con usuario
     @ManyToMany(mappedBy = "categorias")
-    @JsonBackReference
+    //@JsonBackReference(value = "usuario-categorias")
+    @JsonIgnore
     private Set<Usuario> usuarios = new HashSet<>();
 
     // constructor

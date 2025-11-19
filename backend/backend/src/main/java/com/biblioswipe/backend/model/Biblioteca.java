@@ -27,23 +27,26 @@ public class Biblioteca {
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     // indica que este lado será ignorado durante la serialización
-    @JsonBackReference // evita bucle con Usuario
+    @JsonManagedReference(value = "usuario-biblioteca") // evita bucle con Usuario
     private Usuario usuario;
 
     // tres listas de libros (relación N:M con tabla intermedia)
     @ManyToMany
     @JoinTable(name = "biblioteca_recomendados", joinColumns = @JoinColumn(name = "biblioteca_id"), inverseJoinColumns = @JoinColumn(name = "libro_id"))
-    @JsonManagedReference
+    //@JsonManagedReference(value = "biblioteca-recomendados")
+    @JsonIgnore
     private Set<Libro> librosRecomendados = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "biblioteca_leidos", joinColumns = @JoinColumn(name = "biblioteca_id"), inverseJoinColumns = @JoinColumn(name = "libro_id"))
-    @JsonManagedReference
+    //@JsonManagedReference(value = "biblioteca-leidos")
+    @JsonIgnore
     private Set<Libro> librosLeidos = new HashSet<>();
 
     @ManyToMany
     @JoinTable(name = "biblioteca_futuras", joinColumns = @JoinColumn(name = "biblioteca_id"), inverseJoinColumns = @JoinColumn(name = "libro_id"))
-    @JsonManagedReference
+    //@JsonManagedReference(value = "biblioteca-futuras")
+    @JsonIgnore
     private Set<Libro> librosFuturasLecturas = new HashSet<>();
 
     // constructores

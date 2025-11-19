@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +26,7 @@ public class Biblioteca {
     @OneToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     // indica que este lado será ignorado durante la serialización
-    @JsonBackReference // evita bucle con Usuario
+    @JsonBackReference("usuario-biblioteca") // evita bucle con Usuario
     private Usuario usuario;
 
     // tres listas de libros (relación N:M con tabla intermedia)

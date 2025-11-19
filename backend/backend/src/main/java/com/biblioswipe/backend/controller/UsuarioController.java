@@ -68,11 +68,6 @@ public class UsuarioController {
         }
     }
 
-
-
-
-
-
     // DELETE por ID
     // Eliminar usuario
     @DeleteMapping("/{id}")

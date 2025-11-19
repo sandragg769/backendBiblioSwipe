@@ -23,19 +23,19 @@ public class Usuario {
 
     // relación 1:1 con perfil
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonManagedReference // controla la serialización del perfil
+    @JsonManagedReference("usuario-perfil") // controla la serialización del perfil
     private Perfil perfil;
 
     // relación 1:1 con la biblioteca
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     @JoinColumn(name = "perfil_id")
-    @JsonManagedReference // controla la serialización de la biblioteca
+    @JsonManagedReference("usuario-biblioteca") // controla la serialización de la biblioteca
     private Biblioteca biblioteca;
 
     // relación N:M con categorias
     @ManyToMany
     @JoinTable(name = "usuario_categoria", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
-    @JsonManagedReference // evita bucles con categoria
+    @JsonManagedReference("usuario-categorias") // evita bucles con categoria
     private Set<Categoria> categorias = new HashSet<>();
 
     // Relación 1:N reflexiva (usuarios favoritos)

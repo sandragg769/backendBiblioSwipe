@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/perfiles")
+@RequestMapping("/perfiles")
 @CrossOrigin(origins = "*")
 public class PerfilController {
 

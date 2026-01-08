@@ -1,7 +1,11 @@
 package com.biblioswipe.backend.controller;
 
+import com.biblioswipe.backend.dto.PerfilDTO;
+import com.biblioswipe.backend.mapper.PerfilMapper;
 import com.biblioswipe.backend.model.Perfil;
+import com.biblioswipe.backend.model.Usuario;
 import com.biblioswipe.backend.service.PerfilService;
+import com.biblioswipe.backend.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,21 +17,28 @@ import java.util.List;
 public class PerfilController {
 
     private final PerfilService perfilService;
+    private final UsuarioService usuarioService;
 
-    public PerfilController(PerfilService perfilService) {
+
+    public PerfilController(PerfilService perfilService, UsuarioService usuarioService) {
         this.perfilService = perfilService;
+        this.usuarioService = usuarioService;
     }
 
     // GET perfiles
     @GetMapping
-    public List<Perfil> getAllPerfiles() {
-        return perfilService.getAllPerfiles();
+    public List<PerfilDTO> getAllPerfiles() {
+        return perfilService.getAllPerfiles()
+                .stream()
+                .map(PerfilMapper::toDTO)
+                .toList();
     }
 
     // GET con ID perfiles
     @GetMapping("/{id}")
-    public ResponseEntity<Perfil> getPerfilById(@PathVariable Long id) {
+    public ResponseEntity<PerfilDTO> getPerfilById(@PathVariable Long id) {
         return perfilService.getPerfilById(id)
+                .map(PerfilMapper::toDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -40,21 +51,49 @@ public class PerfilController {
     }
 
     // POST perfil
-    @PostMapping
-    public Perfil createPerfil(@RequestBody Perfil perfil) {
-        return perfilService.createPerfil(perfil);
+    @PostMapping("/usuarios/{idUsuario}/perfil")
+    public ResponseEntity<?> crearPerfil(
+            @PathVariable Long idUsuario,
+            @RequestBody Perfil perfil) {
+
+        Usuario usuario = usuarioService.getUsuarioById(idUsuario)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (usuario.getPerfil() != null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Este usuario ya tiene un perfil");
+        }
+
+        perfil.setUsuario(usuario);
+        usuario.setPerfil(perfil);
+
+        return ResponseEntity.ok(perfilService.createPerfil(perfil));
     }
+
 
     // PUT con ID perfil
     @PutMapping("/{id}")
-    public ResponseEntity<Perfil> updatePerfil(@PathVariable Long id, @RequestBody Perfil perfil) {
+    public ResponseEntity<Perfil> updatePerfil(
+            @PathVariable Long id,
+            @RequestBody Perfil perfilActualizado) {
+
         return perfilService.getPerfilById(id)
-                .map(existing -> {
-                    perfil.setPerfil_id(id);
-                    return ResponseEntity.ok(perfilService.createPerfil(perfil));
+                .map(perfilExistente -> {
+
+                    // 🔒 mantener usuario (CLAVE)
+                    perfilActualizado.setUsuario(perfilExistente.getUsuario());
+
+                    // 🔒 mantener ID
+                    perfilActualizado.setPerfil_id(id);
+
+                    return ResponseEntity.ok(
+                            perfilService.createPerfil(perfilActualizado)
+                    );
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
+
 
     // DELETE con ID perfil
     @DeleteMapping("/{id}")

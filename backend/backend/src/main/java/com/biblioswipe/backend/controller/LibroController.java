@@ -11,7 +11,7 @@ import com.biblioswipe.backend.repository.LibroRepository;
 import com.biblioswipe.backend.service.LibroService;
 
 @RestController
-@RequestMapping("/api/libros")
+@RequestMapping("/libros")
 @CrossOrigin(origins = "*")
 public class LibroController {
 

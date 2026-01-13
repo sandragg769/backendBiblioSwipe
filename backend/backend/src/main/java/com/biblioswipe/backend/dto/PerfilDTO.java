@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class PerfilDTO {
 
-    private Long perfil_id;
+    private Long perfilId;
     private String nombre;
     private String apellidos;
     private LocalDate fechaNacimiento;
@@ -16,7 +16,7 @@ public class PerfilDTO {
     }
 
     public PerfilDTO(
-            Long perfil_id,
+            Long perfilId,
             String nombre,
             String apellidos,
             LocalDate fechaNacimiento,
@@ -24,7 +24,7 @@ public class PerfilDTO {
             String fotoPerfil,
             UsuarioPerfilDTO usuario
     ) {
-        this.perfil_id = perfil_id;
+        this.perfilId = perfilId;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.fechaNacimiento = fechaNacimiento;
@@ -33,8 +33,8 @@ public class PerfilDTO {
         this.usuario = usuario;
     }
 
-    public Long getPerfil_id() {
-        return perfil_id;
+    public Long getPerfilId() {
+        return perfilId;
     }
 
     public String getNombre() {
@@ -61,4 +61,3 @@ public class PerfilDTO {
         return usuario;
     }
 }
-

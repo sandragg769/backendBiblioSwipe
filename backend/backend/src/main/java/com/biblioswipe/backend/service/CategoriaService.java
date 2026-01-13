@@ -26,17 +26,24 @@ public class CategoriaService {
     }
 
     // obtener una categoría por id
-    public Optional<Categoria> getCategoriaById(Long id) {
-        return categoriaRepository.findById(id);
+    public Categoria getCategoriaById(Long id) {
+        return categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
     }
 
     // crear una categoría
     public Categoria createCategoria(Categoria categoria) {
+        // Evitar duplicados por nombre
+        categoriaRepository.findByNombreIgnoreCase(categoria.getNombre())
+                .ifPresent(c -> {
+                    throw new RuntimeException("La categoría ya existe");
+                });
+
         return categoriaRepository.save(categoria);
     }
 
     // actualizar una categoría concreta
-    //REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENACIÓN ???????
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public Categoria updateCategoria(Long id, Categoria actualizada) {
         Categoria existente = categoriaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
@@ -45,20 +52,27 @@ public class CategoriaService {
     }
 
     // borrar una categoría concreta
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public void deleteCategoria(Long id) {
+        Categoria categoria = getCategoriaById(id);
+
+        if (!categoria.getLibros().isEmpty()) {
+            throw new RuntimeException("No se puede eliminar una categoría con libros asociados");
+        }
+
         categoriaRepository.deleteById(id);
     }
 
     // METODOS DE LÓGICA DE NEGOCIO
     // obtener libros por categorías (para el filtrado)
     public List<Libro> getLibrosByCategoria(Long categoriaId) {
-        Categoria categoria = categoriaRepository.findById(categoriaId)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
-        return new ArrayList<>(categoria.getLibros());
+        Categoria categoria = getCategoriaById(categoriaId);
+        return categoria.getLibros().stream().toList();
     }
 
     // buscar categoría por nombre
-    public Optional<Categoria> findByNombre(String nombre) {
-        return categoriaRepository.findByNombre(nombre);
+    public Categoria getCategoriaByNombre(String nombre) {
+        return categoriaRepository.findByNombreIgnoreCase(nombre)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
     }
 }

@@ -6,15 +6,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "biblioteca")
@@ -24,28 +16,21 @@ public class Biblioteca {
     private Long id;
 
     // relación 1:1 con usuario
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
-    // indica que este lado será ignorado durante la serialización
-    @JsonManagedReference(value = "usuario-biblioteca") // evita bucle con Usuario
+    @JsonIgnore
     private Usuario usuario;
 
     // tres listas de libros (relación N:M con tabla intermedia)
-    @ManyToMany
-    @JoinTable(name = "biblioteca_recomendados", joinColumns = @JoinColumn(name = "biblioteca_id"), inverseJoinColumns = @JoinColumn(name = "libro_id"))
-    //@JsonManagedReference(value = "biblioteca-recomendados")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Libro> librosRecomendados = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "biblioteca_leidos", joinColumns = @JoinColumn(name = "biblioteca_id"), inverseJoinColumns = @JoinColumn(name = "libro_id"))
-    //@JsonManagedReference(value = "biblioteca-leidos")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Libro> librosLeidos = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(name = "biblioteca_futuras", joinColumns = @JoinColumn(name = "biblioteca_id"), inverseJoinColumns = @JoinColumn(name = "libro_id"))
-    //@JsonManagedReference(value = "biblioteca-futuras")
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Libro> librosFuturasLecturas = new HashSet<>();
 

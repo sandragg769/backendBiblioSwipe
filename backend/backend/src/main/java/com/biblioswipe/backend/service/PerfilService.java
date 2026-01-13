@@ -25,31 +25,36 @@ public class PerfilService {
     }
 
     // obtener un perfil en concreto por id
-    public Optional<Perfil> getPerfilById(Long id) {
-        return perfilRepository.findById(id);
+    public Perfil getPerfilById(Long id) {
+        return perfilRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
     }
 
     // crear un perfil (a la hora de la creación de la cuenta)
+    // ??????? REALMENTE HACE FALTA ???
     public Perfil createPerfil(Perfil perfil) {
         return perfilRepository.save(perfil);
     }
 
     // actualizar perfil concreto
     public Perfil updatePerfil(Long id, Perfil actualizado) {
-        Perfil perfil = perfilRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
+        Perfil perfil = getPerfilById(id);
+
         perfil.setNombre(actualizado.getNombre());
         perfil.setApellidos(actualizado.getApellidos());
+        perfil.setFechaNacimiento(actualizado.getFechaNacimiento());
         perfil.setCiudad(actualizado.getCiudad());
         perfil.setFotoPerfil(actualizado.getFotoPerfil());
-        perfil.setFechaNacimiento(actualizado.getFechaNacimiento());
+
         return perfilRepository.save(perfil);
     }
 
     // eliminar perfil concreto
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public void deletePerfil(Long id) {
         perfilRepository.deleteById(id);
     }
+
 
     // METODOS DE LÓGICA DE NEGOCIO
     // localizar perfiles con la misma ciudad

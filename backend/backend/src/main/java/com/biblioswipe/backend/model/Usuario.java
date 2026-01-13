@@ -25,31 +25,28 @@ public class Usuario {
     private String password;
 
     // relación 1:1 con perfil
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JsonBackReference(value = "usuario-perfil") // controla la serialización del perfil
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Perfil perfil;
 
     // relación 1:1 con la biblioteca
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
-    @JoinColumn(name = "perfil_id")
-    @JsonBackReference(value = "usuario-biblioteca") // controla la serialización de la biblioteca
+    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JsonIgnore
     private Biblioteca biblioteca;
 
     // relación N:M con categorias
-    @ManyToMany
-    @JoinTable(name = "usuario_categoria", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "categoria_id"))
-    //@JsonManagedReference(value = "usuario-categorias") // evita bucles con categoria
+    // categorías favoritas (filtro)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Categoria> categorias = new HashSet<>();
 
     // Relación 1:N reflexiva (usuarios favoritos)
-    @ManyToMany
-    @JoinTable(name = "usuarios_favoritos", joinColumns = @JoinColumn(name = "usuario_id"), inverseJoinColumns = @JoinColumn(name = "favorito_id"))
-    //@JsonManagedReference(value = "usuario-favoritos")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Usuario> usuariosFavoritos = new HashSet<>();
 
-    @ManyToMany(mappedBy = "usuariosFavoritos")
-    //@JsonBackReference(value = "usuario-favoritos")
+    @ManyToMany(mappedBy = "usuariosFavoritos", fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Usuario> esFavoritoDe = new HashSet<>();
 
     // constructores

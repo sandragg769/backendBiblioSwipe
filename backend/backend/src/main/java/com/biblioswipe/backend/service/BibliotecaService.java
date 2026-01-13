@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BibliotecaService {
-    @Autowired
     private final BibliotecaRepository bibliotecaRepository;
-    @Autowired
-    private LibroRepository libroRepository;
+    private final LibroRepository libroRepository;
 
-    public BibliotecaService(BibliotecaRepository bibliotecaRepository) {
+    public BibliotecaService(BibliotecaRepository bibliotecaRepository,
+                             LibroRepository libroRepository) {
         this.bibliotecaRepository = bibliotecaRepository;
+        this.libroRepository = libroRepository;
     }
 
     // METODOS CRUD
@@ -30,16 +30,24 @@ public class BibliotecaService {
     }
 
     // obtener una biblioteca por id
-    public Optional<Biblioteca> getBibliotecaById(Long id) {
-        return bibliotecaRepository.findById(id);
+    public Biblioteca getBibliotecaById(Long id) {
+        return bibliotecaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
     }
 
     // crear una biblioteca
+    // Crear biblioteca (normalmente NO se usa directamente,
+    // porque se crea automáticamente al crear un usuario)
     public Biblioteca createBiblioteca(Biblioteca biblioteca) {
         return bibliotecaRepository.save(biblioteca);
     }
 
+    public void deleteBiblioteca(Long id) {
+        bibliotecaRepository.deleteById(id);
+    }
+
     // actualizar una biblioteca
+    // dejar o quitar ???? gpt dice quitar
     public Biblioteca updateBiblioteca(Long id, Biblioteca actualizada) {
         Biblioteca existente = bibliotecaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
@@ -53,83 +61,79 @@ public class BibliotecaService {
         return bibliotecaRepository.save(existente);
     }
 
+
     // METODOS DE LÓGICA DE NEGOCIO
-    // añadir libro a recomendadas
+    // añadir libro a biblioteca
     public Biblioteca agregarLibroARecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        Libro libro = libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+        Libro libro = getLibroById(libroId);
+
         biblioteca.getLibrosRecomendados().add(libro);
         return bibliotecaRepository.save(biblioteca);
     }
 
-    // añadir libro a leídos
     public Biblioteca agregarLibroALeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        Libro libro = libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+        Libro libro = getLibroById(libroId);
+
         biblioteca.getLibrosLeidos().add(libro);
         return bibliotecaRepository.save(biblioteca);
     }
 
-    // añadir libro a futuras lecturas
-    public Biblioteca agregarLibroAFuturas(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        Libro libro = libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+    public Biblioteca agregarLibroAFuturasLecturas(Long bibliotecaId, Long libroId) {
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+        Libro libro = getLibroById(libroId);
+
         biblioteca.getLibrosFuturasLecturas().add(libro);
         return bibliotecaRepository.save(biblioteca);
     }
 
+
     //util para el controller aparte de los getters propios del model
-    // obtener libros recomendados
+    // obtener libros de biblioteca por clasificación
     public Set<Libro> getLibrosRecomendados(Long bibliotecaId) {
-        return bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"))
-                .getLibrosRecomendados();
+        return getBibliotecaById(bibliotecaId).getLibrosRecomendados();
     }
 
     public Set<Libro> getLibrosLeidos(Long bibliotecaId) {
-        return bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"))
-                .getLibrosLeidos();
+        return getBibliotecaById(bibliotecaId).getLibrosLeidos();
     }
 
-    public Set<Libro> getFuturasLecturas(Long bibliotecaId) {
-        return bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"))
-                .getLibrosFuturasLecturas();
+    public Set<Libro> getLibrosFuturasLecturas(Long bibliotecaId) {
+        return getBibliotecaById(bibliotecaId).getLibrosFuturasLecturas();
     }
+
 
     // eliminar libros de biblioteca
-    public Biblioteca removeLibroDeFuturas(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        Libro libro = libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+    public Biblioteca eliminarLibroDeFuturasLecturas(Long bibliotecaId, Long libroId) {
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+        Libro libro = getLibroById(libroId);
+
         biblioteca.getLibrosFuturasLecturas().remove(libro);
         return bibliotecaRepository.save(biblioteca);
     }
 
-    public Biblioteca removeLibroDeRecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        Libro libro = libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+    public Biblioteca eliminarLibroDeRecomendados(Long bibliotecaId, Long libroId) {
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+        Libro libro = getLibroById(libroId);
+
         biblioteca.getLibrosRecomendados().remove(libro);
         return bibliotecaRepository.save(biblioteca);
     }
 
-    public Biblioteca removeLibroDeLeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = bibliotecaRepository.findById(bibliotecaId)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        Libro libro = libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+    public Biblioteca eliminarLibroDeLeidos(Long bibliotecaId, Long libroId) {
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+        Libro libro = getLibroById(libroId);
+
         biblioteca.getLibrosLeidos().remove(libro);
         return bibliotecaRepository.save(biblioteca);
+    }
+
+
+    // METODO AUXILIAR
+    private Libro getLibroById(Long libroId) {
+        return libroRepository.findById(libroId)
+                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
     }
 
     //guardar cambios biblioteca (NO HACE FALTA SEGÚN GTP, SE HACE CON EL ACTUALIZAR) ??????

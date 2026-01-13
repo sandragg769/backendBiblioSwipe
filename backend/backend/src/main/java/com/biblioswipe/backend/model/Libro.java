@@ -5,14 +5,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "libros")
@@ -26,27 +20,27 @@ public class Libro {
     private String portada;
 
     // relacion 1:N con categoria (solo uan categoría el libro)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
-    @JsonBackReference // evita bucle con Categoria
+    @JsonIgnoreProperties("libros")
     private Categoria categoria;
+
 
     // relaciones N:M con biblioteca (en biblioteca hay tres listas de libros
     // también)
-    @ManyToMany(mappedBy = "librosRecomendados")
-    //@JsonBackReference(value = "biblioteca-recomendados") //evita recursividad circular entre Libro y Biblioteca
+    // NO debe conocer bibliotecas
+    @ManyToMany(mappedBy = "librosRecomendados", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Biblioteca> bibliotecasRecomendados = new HashSet<>();
+    private Set<Biblioteca> bibliotecasRecomendados;
 
-    @ManyToMany(mappedBy = "librosLeidos")
-    //@JsonBackReference(value = "biblioteca-leidos")
+    // NO debe conocer bibliotecas
+    @ManyToMany(mappedBy = "librosLeidos", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Biblioteca> bibliotecasLeidos = new HashSet<>();
+    private Set<Biblioteca> bibliotecasLeidos;
 
-    @ManyToMany(mappedBy = "librosFuturasLecturas")
-    //@JsonBackReference(value = "biblioteca-futuras")
+    @ManyToMany(mappedBy = "librosFuturasLecturas", fetch = FetchType.LAZY)
     @JsonIgnore
-    private Set<Biblioteca> bibliotecasFuturasLecturas = new HashSet<>();
+    private Set<Biblioteca> bibliotecasFuturasLecturas;
 
     // constructores
     public Libro() {

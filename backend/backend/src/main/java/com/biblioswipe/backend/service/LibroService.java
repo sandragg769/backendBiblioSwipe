@@ -3,6 +3,7 @@ package com.biblioswipe.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.biblioswipe.backend.model.Categoria;
 import org.springframework.stereotype.Service;
 
 import com.biblioswipe.backend.model.Libro;
@@ -24,45 +25,61 @@ public class LibroService {
     }
 
     // obtener un libro por id
-    public Optional<Libro> getLibroById(Long id) {
-        return libroRepository.findById(id);
+    public Libro getLibroById(Long id) {
+        return libroRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
     }
 
     // crear un libro
-    public Libro createLibro(Libro libro) {
+    // no usar el save solo
+    public Libro createLibro(String titulo, String autor, String portada, Long categoriaId) {
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        Libro libro = new Libro();
+        libro.setTitulo(titulo);
+        libro.setAutor(autor);
+        libro.setPortada(portada);
+        libro.setCategoria(categoria);
+
         return libroRepository.save(libro);
     }
 
-    //REALMENTE NO SE PUEDE ACTUALIZAR UN LIBRO EN NUESTRA APP (FUTURA IMPLEMENTACIÓN) ?????
     // actualizar un libro concreto (id)
-    public Libro updateLibro(Long id, Libro actualizado) {
-        Libro libro = libroRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
-        libro.setTitulo(actualizado.getTitulo());
-        libro.setAutor(actualizado.getAutor());
-        libro.setPortada(actualizado.getPortada());
-        libro.setCategoria(actualizado.getCategoria());
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
+    public Libro createLibro(String titulo, String autor, String portada, Long categoriaId) {
+        Categoria categoria = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
+
+        Libro libro = new Libro();
+        libro.setTitulo(titulo);
+        libro.setAutor(autor);
+        libro.setPortada(portada);
+        libro.setCategoria(categoria);
+
         return libroRepository.save(libro);
     }
 
     // eliminar un libro concreto
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public void deleteLibro(Long id) {
         libroRepository.deleteById(id);
     }
 
+
     // METODOS DE LÓGICA DE NEGOCIOS
     // encontrar libros por categoría
-    public List<Libro> findByCategoria(String categoria) {
-        return libroRepository.findByCategoria_NombreIgnoreCase(categoria);
+    public List<Libro> buscarPorCategoria(String nombreCategoria) {
+        return libroRepository.findByCategoria_NombreIgnoreCase(nombreCategoria);
     }
 
     // Buscar libros por autor
-    public List<Libro> findByAutor(String autor) {
+    public List<Libro> buscarPorAutor(String autor) {
         return libroRepository.findByAutorContainingIgnoreCase(autor);
     }
 
     // Buscar libros por título
-    public List<Libro> findByTitulo(String titulo) {
+    public List<Libro> buscarPorTitulo(String titulo) {
         return libroRepository.findByTituloContainingIgnoreCase(titulo);
     }
 }

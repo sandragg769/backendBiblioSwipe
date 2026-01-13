@@ -1,5 +1,6 @@
 package com.biblioswipe.backend.service;
 
+import com.biblioswipe.backend.dto.UsuarioMatchDTO;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Categoria;
 import com.biblioswipe.backend.model.Perfil;
@@ -12,9 +13,11 @@ import com.biblioswipe.backend.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Stream;
 
 //service es la lógica del negocio
 @Service
@@ -46,31 +49,41 @@ public class UsuarioService {
     }
 
     // busca un usuario por email
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public Optional<Usuario> findByEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
 
     // busca un usuario por id
-    public Optional<Usuario> getUsuarioById(Long id) {
-        return usuarioRepository.findById(id);
+    public Usuario getUsuarioById(Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
-    // crea un usuario
-    public Usuario createUsuario(Usuario usuario) {
-        // cuando se crea un usuario, también se le crea perfil y biblioteca vacíos
+    // crea un usuario, perfil y biblioteca vacía
+    public Usuario registrarUsuario(Usuario usuario) {
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new RuntimeException("El email ya está registrado");
+        }
+
+        // guardar usuario
         Usuario nuevo = usuarioRepository.save(usuario);
+
+        // crear perfil vacío
         Perfil perfil = new Perfil();
         perfil.setUsuario(nuevo);
         perfilRepository.save(perfil);
 
-        Biblioteca biblioteca = new Biblioteca(nuevo);
+        // crear biblioteca vacía
+        Biblioteca biblioteca = new Biblioteca();
+        biblioteca.setUsuario(nuevo);
         bibliotecaRepository.save(biblioteca);
 
         return nuevo;
     }
 
-    // NO SE SABE SI SE IMPLEMENTARÁ AHORA O A FUTURO ??????
     // actualiza un usuario
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public Usuario updateUsuario(Long id, Usuario actualizado) {
         Usuario existente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -80,46 +93,43 @@ public class UsuarioService {
     }
 
     // borra usuario
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
     public void deleteUsuario(Long id) {
         usuarioRepository.deleteById(id);
     }
 
+
     // METODOS LÓGICA DE NEGOCIO
     // agregar un usuario a lista de usuarios favoritos de un usuario
-    public Usuario agregarFavorito(Long usuarioId, Long favoritoId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        Usuario favorito = usuarioRepository.findById(favoritoId)
-                .orElseThrow(() -> new RuntimeException("Usuario favorito no encontrado"));
+    public void agregarFavorito(Long usuarioId, Long favoritoId) {
+        Usuario usuario = getUsuarioById(usuarioId);
+        Usuario favorito = getUsuarioById(favoritoId);
 
         if (usuario.getUsuariosFavoritos().contains(favorito)) {
-            throw new RuntimeException("El usuario ya está en favoritos");
+            return;
         }
 
         usuario.getUsuariosFavoritos().add(favorito);
-        return usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     // devuelve lista de usuarios favoritos de un usuario (like)
     public Set<Usuario> getFavoritos(Long usuarioId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        return usuario.getUsuariosFavoritos();
+        return getUsuarioById(usuarioId).getUsuariosFavoritos();
     }
 
     // agrega categoría a un usuario
-    public Usuario agregarCategoria(Long usuarioId, Long categoriaId) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    public void agregarCategoria(Long usuarioId, Long categoriaId) {
+        Usuario usuario = getUsuarioById(usuarioId);
         Categoria categoria = categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
         usuario.getCategorias().add(categoria);
-        return usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
     }
 
     // eliminar categoría
+    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENACIÓN ???????
     public Usuario eliminarCategoria(Long usuarioId, Long categoriaId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -130,36 +140,48 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    // enlaza usuario y perfil
-    public Usuario asignarPerfil(Long usuarioId, Perfil perfil) {
-        Usuario usuario = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-        perfil.setUsuario(usuario);
-        perfilRepository.save(perfil);
-        usuario.setPerfil(perfil);
-
-        return usuarioRepository.save(usuario);
-    }
-
     // obtiene el perfil (los datos) de un usuario
-    public Perfil getPerfil(Long usuarioId) {
+    public Perfil getPerfilDeUsuario(Long usuarioId) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return usuario.getPerfil();
     }
 
-    // registro y login
-    public String registrarUsuario(Usuario usuario) {
-        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
-            throw new RuntimeException("El email ya está registrado");
-        }
-        usuarioRepository.save(usuario);
-        return "Usuario registrado correctamente";
+    public Biblioteca getBibliotecaDeUsuario(Long usuarioId) {
+        return getUsuarioById(usuarioId).getBiblioteca();
     }
 
+    // login
     public boolean login(String email, String password) {
-        Optional<Usuario> userDb = usuarioRepository.findByEmail(email);
-        return userDb.isPresent() && userDb.get().getPassword().equals(password);
+        return usuarioRepository.findByEmail(email)
+                .map(u -> u.getPassword().equals(password))
+                .orElse(false);
     }
+
+
+    // FILTRADO CATEGORÍA
+    public List<UsuarioMatchDTO> buscarUsuariosPorCategoria(String categoria) {
+        List<Usuario> usuarios = usuarioRepository.findAll();
+
+        return usuarios.stream()
+                .map(usuario -> {
+                    Biblioteca b = usuario.getBiblioteca();
+
+                    long count = Stream.concat(
+                                    b.getLibrosLeidos().stream(),
+                                    b.getLibrosRecomendados().stream()
+                            )
+                            .filter(libro ->
+                                    libro.getCategoria() != null &&
+                                            libro.getCategoria().getNombre().equalsIgnoreCase(categoria)
+                            )
+                            .count();
+
+                    return new UsuarioMatchDTO(usuario, count);
+                })
+                .filter(dto -> dto.getCoincidencias() > 0)
+                .sorted(Comparator.comparingLong(UsuarioMatchDTO::getCoincidencias).reversed())
+                .toList();
+    }
+
 }

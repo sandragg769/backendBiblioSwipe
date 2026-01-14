@@ -32,7 +32,7 @@ public class BibliotecaService {
 
     // obtener una biblioteca por id
     public BibliotecaDTO getBibliotecaByIdDTO(Long bibliotecaId) {
-        Biblioteca biblioteca = getBiblioteca(bibliotecaId);
+        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
 
         return new BibliotecaDTO(
                 biblioteca.getId(),
@@ -72,19 +72,19 @@ public class BibliotecaService {
     // METODOS DE LÓGICA DE NEGOCIO
     // añadir libro a biblioteca
     public BibliotecaDTO agregarLibroARecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBiblioteca(bibliotecaId);
+        Biblioteca b = getBibliotecaById(bibliotecaId);
         b.getLibrosRecomendados().add(getLibroById(libroId));
         return toDTO(bibliotecaRepository.save(b));
     }
 
     public BibliotecaDTO agregarLibroALeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBiblioteca(bibliotecaId);
+        Biblioteca b = getBibliotecaById(bibliotecaId);
         b.getLibrosLeidos().add(getLibroById(libroId));
         return toDTO(bibliotecaRepository.save(b));
     }
 
     public BibliotecaDTO agregarLibroAFuturas(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBiblioteca(bibliotecaId);
+        Biblioteca b = getBibliotecaById(bibliotecaId);
         b.getLibrosFuturasLecturas().add(getLibroById(libroId));
         return toDTO(bibliotecaRepository.save(b));
     }
@@ -100,26 +100,26 @@ public class BibliotecaService {
         return getBibliotecaById(bibliotecaId).getLibrosLeidos();
     }
 
-    public Set<Libro> getLibrosFuturasLecturas(Long bibliotecaId) {
+    public Set<Libro> getFuturasLecturas(Long bibliotecaId) {
         return getBibliotecaById(bibliotecaId).getLibrosFuturasLecturas();
     }
 
 
     // eliminar libros de biblioteca
     public BibliotecaDTO eliminarLibroDeFuturas(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBiblioteca(bibliotecaId);
+        Biblioteca b = getBibliotecaById(bibliotecaId);
         b.getLibrosFuturasLecturas().remove(getLibroById(libroId));
         return toDTO(bibliotecaRepository.save(b));
     }
 
     public BibliotecaDTO eliminarLibroDeRecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBiblioteca(bibliotecaId);
+        Biblioteca b = getBibliotecaById(bibliotecaId);
         b.getLibrosRecomendados().remove(getLibroById(libroId));
         return toDTO(bibliotecaRepository.save(b));
     }
 
     public BibliotecaDTO eliminarLibroDeLeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBiblioteca(bibliotecaId);
+        Biblioteca b = getBibliotecaById(bibliotecaId);
         b.getLibrosLeidos().remove(getLibroById(libroId));
         return toDTO(bibliotecaRepository.save(b));
     }
@@ -131,7 +131,7 @@ public class BibliotecaService {
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
     }
 
-    private Biblioteca getBiblioteca(Long id) {
+    private Biblioteca getBibliotecaById(Long id) {
         return bibliotecaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
     }

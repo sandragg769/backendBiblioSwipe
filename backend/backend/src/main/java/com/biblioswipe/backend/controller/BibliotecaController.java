@@ -30,13 +30,7 @@ public class BibliotecaController {
     // GET con ID biblioteca
     @GetMapping("/{id}")
     public ResponseEntity<BibliotecaDTO> getBibliotecaById(@PathVariable Long id) {
-        return ResponseEntity.ok(bibliotecaService.getBibliotecaDTO(id));
-    }
-
-    // POST biblioteca
-    @PostMapping
-    public Biblioteca createBiblioteca(@RequestBody Biblioteca biblioteca) {
-        return bibliotecaService.createBiblioteca(biblioteca);
+        return ResponseEntity.ok(bibliotecaService.getBibliotecaByIdDTO(id));
     }
 
     // PUT con ID biblioteca
@@ -48,14 +42,14 @@ public class BibliotecaController {
     // POST con ID libro a futuras lecturas
     // Añadir libro a futuras lecturas
     @PostMapping("/{id}/futuras/{libroId}")
-    public ResponseEntity<Biblioteca> addLibroAFuturas(@PathVariable Long id, @PathVariable Long libroId) {
+    public ResponseEntity<BibliotecaDTO> addFutura(@PathVariable Long id, @PathVariable Long libroId) {
         return ResponseEntity.ok(bibliotecaService.agregarLibroAFuturas(id, libroId));
     }
 
     // POST con ID libro a leídos
     // Añadir libro a leídos
     @PostMapping("/{id}/leidos/{libroId}")
-    public ResponseEntity<Biblioteca> addLibroALeidos(@PathVariable Long id, @PathVariable Long libroId) {
+    public ResponseEntity<BibliotecaDTO> addLeido(@PathVariable Long id, @PathVariable Long libroId) {
         return ResponseEntity.ok(bibliotecaService.agregarLibroALeidos(id, libroId));
     }
 
@@ -68,9 +62,9 @@ public class BibliotecaController {
 
     // GET con ID libros leídos
     // Ver libros leídos
-    @PostMapping("/{id}/leidos/{libroId}")
-    public ResponseEntity<BibliotecaDTO> addLeido(@PathVariable Long id, @PathVariable Long libroId) {
-        return ResponseEntity.ok(bibliotecaService.agregarLibroALeidos(id, libroId));
+    @GetMapping("/{id}/leidos")
+    public ResponseEntity<Set<Libro>> getLibrosLeidos(@PathVariable Long id) {
+        return ResponseEntity.ok(bibliotecaService.getLibrosLeidos(id));
     }
 
     // GET con ID libros recomendados
@@ -90,22 +84,22 @@ public class BibliotecaController {
     // Eliminar libro de valda futuras lecturas
     //DELETE con ID de biblioteca futuras lecturas con ID específico de libro
     @DeleteMapping("/{id}/futuras/{libroId}")
-    public ResponseEntity<Biblioteca> removeLibroDeFuturas(@PathVariable Long id, @PathVariable Long libroId) {
-        return ResponseEntity.ok(bibliotecaService.removeLibroDeFuturas(id, libroId));
+    public ResponseEntity<BibliotecaDTO> removeFutura(@PathVariable Long id, @PathVariable Long libroId) {
+        return ResponseEntity.ok(bibliotecaService.eliminarLibroDeFuturas(id, libroId));
     }
 
     // Eliminar libro de valda leídos
     //DELETE con ID de biblioteca leídos con ID específico de libro
     @DeleteMapping("/{id}/leidos/{libroId}")
-    public ResponseEntity<Biblioteca> removeLibroDeLeidos(@PathVariable Long id, @PathVariable Long libroId) {
-        return ResponseEntity.ok(bibliotecaService.removeLibroDeLeidos(id, libroId));
+    public ResponseEntity<BibliotecaDTO> removeLeido(@PathVariable Long id, @PathVariable Long libroId) {
+        return ResponseEntity.ok(bibliotecaService.eliminarLibroDeLeidos(id, libroId));
     }
 
     // Eliminar libro de valda recomendados
     //DELETE con ID de biblioteca recomendados con ID específico de libro
     @DeleteMapping("/{id}/recomendados/{libroId}")
-    public ResponseEntity<Biblioteca> removeLibroDeRecomendados(@PathVariable Long id, @PathVariable Long libroId) {
-        return ResponseEntity.ok(bibliotecaService.removeLibroDeRecomendados(id, libroId));
+    public ResponseEntity<BibliotecaDTO> removeRecomendado(@PathVariable Long id, @PathVariable Long libroId) {
+        return ResponseEntity.ok(bibliotecaService.eliminarLibroDeRecomendados(id, libroId));
     }
 
 }

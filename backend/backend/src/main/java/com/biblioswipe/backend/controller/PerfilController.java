@@ -1,6 +1,6 @@
 package com.biblioswipe.backend.controller;
 
-import com.biblioswipe.backend.dto.PerfilDTO;
+import com.biblioswipe.backend.dto.PerfilConUsuarioDTO;
 import com.biblioswipe.backend.mapper.PerfilMapper;
 import com.biblioswipe.backend.model.Perfil;
 import com.biblioswipe.backend.model.Usuario;
@@ -27,7 +27,7 @@ public class PerfilController {
 
     // GET perfiles
     @GetMapping
-    public List<PerfilDTO> getAllPerfiles() {
+    public List<PerfilConUsuarioDTO> getAllPerfiles() {
         return perfilService.getAllPerfiles()
                 .stream()
                 .map(PerfilMapper::toDTO)
@@ -36,7 +36,7 @@ public class PerfilController {
 
     // GET con ID perfiles
     @GetMapping("/{id}")
-    public ResponseEntity<PerfilDTO> getPerfilById(@PathVariable Long id) {
+    public ResponseEntity<PerfilConUsuarioDTO> getPerfilById(@PathVariable Long id) {
         return perfilService.getPerfilById(id)
                 .map(PerfilMapper::toDTO)
                 .map(ResponseEntity::ok)

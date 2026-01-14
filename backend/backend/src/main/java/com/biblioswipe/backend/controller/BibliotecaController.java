@@ -1,5 +1,6 @@
 package com.biblioswipe.backend.controller;
 
+import com.biblioswipe.backend.dto.BibliotecaDTO;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Libro;
 import com.biblioswipe.backend.service.BibliotecaService;
@@ -28,10 +29,8 @@ public class BibliotecaController {
 
     // GET con ID biblioteca
     @GetMapping("/{id}")
-    public ResponseEntity<Biblioteca> getBibliotecaById(@PathVariable Long id) {
-        return bibliotecaService.getBibliotecaById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BibliotecaDTO> getBibliotecaById(@PathVariable Long id) {
+        return ResponseEntity.ok(bibliotecaService.getBibliotecaDTO(id));
     }
 
     // POST biblioteca
@@ -63,15 +62,15 @@ public class BibliotecaController {
     // POST con ID libro a recomendados
     // Añadir libro a recomendados
     @PostMapping("/{id}/recomendados/{libroId}")
-    public ResponseEntity<Biblioteca> addLibroARecomendados(@PathVariable Long id, @PathVariable Long libroId) {
+    public ResponseEntity<BibliotecaDTO> addRecomendado(@PathVariable Long id, @PathVariable Long libroId) {
         return ResponseEntity.ok(bibliotecaService.agregarLibroARecomendados(id, libroId));
     }
 
     // GET con ID libros leídos
     // Ver libros leídos
-    @GetMapping("/{id}/leidos")
-    public ResponseEntity<Set<Libro>> getLibrosLeidos(@PathVariable Long id) {
-        return ResponseEntity.ok(bibliotecaService.getLibrosLeidos(id));
+    @PostMapping("/{id}/leidos/{libroId}")
+    public ResponseEntity<BibliotecaDTO> addLeido(@PathVariable Long id, @PathVariable Long libroId) {
+        return ResponseEntity.ok(bibliotecaService.agregarLibroALeidos(id, libroId));
     }
 
     // GET con ID libros recomendados

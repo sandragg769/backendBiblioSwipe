@@ -1,11 +1,12 @@
 package com.biblioswipe.backend.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
+import com.biblioswipe.backend.dto.BibliotecaDTO;
+import com.biblioswipe.backend.dto.LibroDTO;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Libro;
 import com.biblioswipe.backend.repository.BibliotecaRepository;
@@ -30,9 +31,15 @@ public class BibliotecaService {
     }
 
     // obtener una biblioteca por id
-    public Biblioteca getBibliotecaById(Long id) {
-        return bibliotecaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
+    public BibliotecaDTO getBibliotecaByIdDTO(Long bibliotecaId) {
+        Biblioteca biblioteca = getBiblioteca(bibliotecaId);
+
+        return new BibliotecaDTO(
+                biblioteca.getId(),
+                toLibroDTOSet(biblioteca.getLibrosRecomendados()),
+                toLibroDTOSet(biblioteca.getLibrosLeidos()),
+                toLibroDTOSet(biblioteca.getLibrosFuturasLecturas())
+        );
     }
 
     // crear una biblioteca
@@ -64,28 +71,22 @@ public class BibliotecaService {
 
     // METODOS DE LÓGICA DE NEGOCIO
     // añadir libro a biblioteca
-    public Biblioteca agregarLibroARecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosRecomendados().add(libro);
-        return bibliotecaRepository.save(biblioteca);
+    public BibliotecaDTO agregarLibroARecomendados(Long bibliotecaId, Long libroId) {
+        Biblioteca b = getBiblioteca(bibliotecaId);
+        b.getLibrosRecomendados().add(getLibroById(libroId));
+        return toDTO(bibliotecaRepository.save(b));
     }
 
-    public Biblioteca agregarLibroALeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosLeidos().add(libro);
-        return bibliotecaRepository.save(biblioteca);
+    public BibliotecaDTO agregarLibroALeidos(Long bibliotecaId, Long libroId) {
+        Biblioteca b = getBiblioteca(bibliotecaId);
+        b.getLibrosLeidos().add(getLibroById(libroId));
+        return toDTO(bibliotecaRepository.save(b));
     }
 
-    public Biblioteca agregarLibroAFuturasLecturas(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosFuturasLecturas().add(libro);
-        return bibliotecaRepository.save(biblioteca);
+    public BibliotecaDTO agregarLibroAFuturas(Long bibliotecaId, Long libroId) {
+        Biblioteca b = getBiblioteca(bibliotecaId);
+        b.getLibrosFuturasLecturas().add(getLibroById(libroId));
+        return toDTO(bibliotecaRepository.save(b));
     }
 
 
@@ -105,28 +106,22 @@ public class BibliotecaService {
 
 
     // eliminar libros de biblioteca
-    public Biblioteca eliminarLibroDeFuturasLecturas(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosFuturasLecturas().remove(libro);
-        return bibliotecaRepository.save(biblioteca);
+    public BibliotecaDTO eliminarLibroDeFuturas(Long bibliotecaId, Long libroId) {
+        Biblioteca b = getBiblioteca(bibliotecaId);
+        b.getLibrosFuturasLecturas().remove(getLibroById(libroId));
+        return toDTO(bibliotecaRepository.save(b));
     }
 
-    public Biblioteca eliminarLibroDeRecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosRecomendados().remove(libro);
-        return bibliotecaRepository.save(biblioteca);
+    public BibliotecaDTO eliminarLibroDeRecomendados(Long bibliotecaId, Long libroId) {
+        Biblioteca b = getBiblioteca(bibliotecaId);
+        b.getLibrosRecomendados().remove(getLibroById(libroId));
+        return toDTO(bibliotecaRepository.save(b));
     }
 
-    public Biblioteca eliminarLibroDeLeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosLeidos().remove(libro);
-        return bibliotecaRepository.save(biblioteca);
+    public BibliotecaDTO eliminarLibroDeLeidos(Long bibliotecaId, Long libroId) {
+        Biblioteca b = getBiblioteca(bibliotecaId);
+        b.getLibrosLeidos().remove(getLibroById(libroId));
+        return toDTO(bibliotecaRepository.save(b));
     }
 
 
@@ -134,6 +129,34 @@ public class BibliotecaService {
     private Libro getLibroById(Long libroId) {
         return libroRepository.findById(libroId)
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+    }
+
+    private Biblioteca getBiblioteca(Long id) {
+        return bibliotecaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
+    }
+
+    private BibliotecaDTO toDTO(Biblioteca b) {
+        return new BibliotecaDTO(
+                b.getId(),
+                toLibroDTOSet(b.getLibrosRecomendados()),
+                toLibroDTOSet(b.getLibrosLeidos()),
+                toLibroDTOSet(b.getLibrosFuturasLecturas())
+        );
+    }
+
+    private Set<LibroDTO> toLibroDTOSet(Set<Libro> libros) {
+        return libros.stream().map(this::toLibroDTO).collect(Collectors.toSet());
+    }
+
+    private LibroDTO toLibroDTO(Libro libro) {
+        return new LibroDTO(
+                libro.getId(),
+                libro.getTitulo(),
+                libro.getAutor(),
+                libro.getPortada(),
+                libro.getCategoria() != null ? libro.getCategoria().getNombre() : null
+        );
     }
 
     //guardar cambios biblioteca (NO HACE FALTA SEGÚN GTP, SE HACE CON EL ACTUALIZAR) ??????

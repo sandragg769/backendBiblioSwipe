@@ -22,6 +22,9 @@ public class BibliotecaDTO {
         this.futurasLecturas = futurasLecturas;
     }
 
+    public BibliotecaDTO(Long id, Set<LibroDTO> libroDTOSet, Set<LibroDTO> libroDTOSet1, Set<LibroDTO> libroDTOSet2) {
+    }
+
     public Set<LibroDTO> getRecomendados() {
         return recomendados;
     }

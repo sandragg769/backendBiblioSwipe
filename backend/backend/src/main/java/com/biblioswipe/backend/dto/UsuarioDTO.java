@@ -1,17 +1,18 @@
 package com.biblioswipe.backend.dto;
 
-// sin password
-public class UsuarioPerfilDTO {
+public class UsuarioDTO {
 
     private Long id;
     private String email;
+    private PerfilDTO perfil;
 
-    public UsuarioPerfilDTO() {
+    public UsuarioDTO() {
     }
 
-    public UsuarioPerfilDTO(Long id, String email) {
+    public UsuarioDTO(Long id, String email, PerfilDTO perfil) {
         this.id = id;
         this.email = email;
+        this.perfil = perfil;
     }
 
     public Long getId() {
@@ -21,6 +22,9 @@ public class UsuarioPerfilDTO {
     public String getEmail() {
         return email;
     }
-}
 
+    public PerfilDTO getPerfil() {
+        return perfil;
+    }
+}
 

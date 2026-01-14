@@ -1,5 +1,7 @@
 package com.biblioswipe.backend.service;
 
+import com.biblioswipe.backend.dto.PerfilDTO;
+import com.biblioswipe.backend.dto.UsuarioDTO;
 import com.biblioswipe.backend.dto.UsuarioMatchDTO;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Categoria;
@@ -61,7 +63,7 @@ public class UsuarioService {
     }
 
     // crea un usuario, perfil y biblioteca vacía
-    public Usuario registrarUsuario(Usuario usuario) {
+    public Usuario createUsuario(Usuario usuario) {
         if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
         }
@@ -151,6 +153,16 @@ public class UsuarioService {
         return getUsuarioById(usuarioId).getBiblioteca();
     }
 
+    // registro
+    public String registrarUsuario(Usuario usuario) {
+        if (usuarioRepository.findByEmail(usuario.getEmail()).isPresent()) {
+            throw new RuntimeException("El email ya está registrado");
+        }
+
+        createUsuario(usuario);
+        return "Usuario registrado correctamente";
+    }
+
     // login
     public boolean login(String email, String password) {
         return usuarioRepository.findByEmail(email)
@@ -183,5 +195,54 @@ public class UsuarioService {
                 .sorted(Comparator.comparingLong(UsuarioMatchDTO::getCoincidencias).reversed())
                 .toList();
     }
+
+    // DTOS (LO QUE USA EL FRONT)
+
+    public List<UsuarioDTO> getAllUsuariosDTO() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(this::toUsuarioDTO)
+                .toList();
+    }
+
+    public Optional<UsuarioDTO> getUsuarioDTOById(Long id) {
+        return usuarioRepository.findById(id)
+                .map(this::toUsuarioDTO);
+    }
+
+    public List<UsuarioDTO> getFavoritosDTO(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return usuario.getUsuariosFavoritos()
+                .stream()
+                .map(this::toUsuarioDTO)
+                .toList();
+    }
+
+    private UsuarioDTO toUsuarioDTO(Usuario usuario) {
+
+        Perfil perfil = usuario.getPerfil();
+
+        PerfilDTO perfilDTO = null;
+        if (perfil != null) {
+            perfilDTO = new PerfilDTO(
+                    perfil.getPerfil_id(),
+                    perfil.getNombre(),
+                    perfil.getApellidos(),
+                    perfil.getFechaNacimiento(),
+                    perfil.getCiudad(),
+                    perfil.getFotoPerfil(),
+                    null // aquí NO metemos usuario otra vez
+            );
+        }
+
+        return new UsuarioDTO(
+                usuario.getUsuario_id(),
+                usuario.getEmail(),
+                perfilDTO
+        );
+    }
+
 
 }

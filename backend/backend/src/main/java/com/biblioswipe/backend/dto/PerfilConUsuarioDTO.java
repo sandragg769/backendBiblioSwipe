@@ -2,7 +2,7 @@ package com.biblioswipe.backend.dto;
 
 import java.time.LocalDate;
 
-public class PerfilDTO {
+public class PerfilConUsuarioDTO {
 
     private Long perfilId;
     private String nombre;
@@ -12,7 +12,10 @@ public class PerfilDTO {
     private String fotoPerfil;
     private UsuarioDTO usuario;
 
-    public PerfilDTO(
+    public PerfilConUsuarioDTO() {
+    }
+
+    public PerfilConUsuarioDTO(
             Long perfilId,
             String nombre,
             String apellidos,
@@ -58,4 +61,3 @@ public class PerfilDTO {
         return usuario;
     }
 }
-

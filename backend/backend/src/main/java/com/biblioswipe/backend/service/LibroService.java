@@ -3,7 +3,10 @@ package com.biblioswipe.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.biblioswipe.backend.dto.LibroCreateDTO;
+import com.biblioswipe.backend.dto.LibroDTO;
 import com.biblioswipe.backend.model.Categoria;
+import com.biblioswipe.backend.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 
 import com.biblioswipe.backend.model.Libro;
@@ -13,51 +16,44 @@ import com.biblioswipe.backend.repository.LibroRepository;
 public class LibroService {
 
     private final LibroRepository libroRepository;
+    private final CategoriaRepository categoriaRepository;
 
-    public LibroService(LibroRepository libroRepository) {
+    public LibroService(LibroRepository libroRepository,
+                        CategoriaRepository categoriaRepository) {
         this.libroRepository = libroRepository;
+        this.categoriaRepository = categoriaRepository;
     }
 
     // METODOS CRUD
     // obtener todos los libros
-    public List<Libro> getAllLibros() {
-        return libroRepository.findAll();
+    public List<LibroDTO> getAllLibros() {
+        return libroRepository.findAll()
+                .stream()
+                .map(this::toLibroDTO)
+                .toList();
     }
 
     // obtener un libro por id
-    public Libro getLibroById(Long id) {
-        return libroRepository.findById(id)
+    public LibroDTO getLibroById(Long id) {
+        Libro libro = libroRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+        return toLibroDTO(libro);
     }
 
     // crear un libro
     // no usar el save solo
-    public Libro createLibro(String titulo, String autor, String portada, Long categoriaId) {
-        Categoria categoria = categoriaRepository.findById(categoriaId)
+    public LibroDTO createLibro(LibroCreateDTO dto) {
+        Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
                 .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
-        Libro libro = new Libro();
-        libro.setTitulo(titulo);
-        libro.setAutor(autor);
-        libro.setPortada(portada);
-        libro.setCategoria(categoria);
-
-        return libroRepository.save(libro);
-    }
-
-    // actualizar un libro concreto (id)
-    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
-    public Libro createLibro(String titulo, String autor, String portada, Long categoriaId) {
-        Categoria categoria = categoriaRepository.findById(categoriaId)
-                .orElseThrow(() -> new RuntimeException("Categoría no encontrada"));
 
         Libro libro = new Libro();
-        libro.setTitulo(titulo);
-        libro.setAutor(autor);
-        libro.setPortada(portada);
+        libro.setTitulo(dto.getTitulo());
+        libro.setAutor(dto.getAutor());
+        libro.setPortada(dto.getPortada());
         libro.setCategoria(categoria);
 
-        return libroRepository.save(libro);
+        return toLibroDTO(libroRepository.save(libro));
     }
 
     // eliminar un libro concreto
@@ -69,17 +65,37 @@ public class LibroService {
 
     // METODOS DE LÓGICA DE NEGOCIOS
     // encontrar libros por categoría
-    public List<Libro> buscarPorCategoria(String nombreCategoria) {
-        return libroRepository.findByCategoria_NombreIgnoreCase(nombreCategoria);
+    public List<LibroDTO> buscarPorCategoria(String nombreCategoria) {
+        return libroRepository.findByCategoria_NombreIgnoreCase(nombreCategoria)
+                .stream()
+                .map(this::toLibroDTO)
+                .toList();
     }
 
     // Buscar libros por autor
-    public List<Libro> buscarPorAutor(String autor) {
-        return libroRepository.findByAutorContainingIgnoreCase(autor);
+    public List<LibroDTO> buscarPorAutor(String autor) {
+        return libroRepository.findByAutorContainingIgnoreCase(autor)
+                .stream()
+                .map(this::toLibroDTO)
+                .toList();
     }
 
     // Buscar libros por título
-    public List<Libro> buscarPorTitulo(String titulo) {
-        return libroRepository.findByTituloContainingIgnoreCase(titulo);
+    public List<LibroDTO> buscarPorTitulo(String titulo) {
+        return libroRepository.findByTituloContainingIgnoreCase(titulo)
+                .stream()
+                .map(this::toLibroDTO)
+                .toList();
+    }
+
+    // MAPPER
+    private LibroDTO toLibroDTO(Libro libro) {
+        return new LibroDTO(
+                libro.getId(),
+                libro.getTitulo(),
+                libro.getAutor(),
+                libro.getPortada(),
+                libro.getCategoria().getNombre()
+        );
     }
 }

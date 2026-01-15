@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 
 import com.biblioswipe.backend.dto.BibliotecaDTO;
+import com.biblioswipe.backend.dto.LibroCreateDTO;
 import com.biblioswipe.backend.dto.LibroDTO;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Libro;
@@ -36,9 +37,9 @@ public class BibliotecaService {
 
         return new BibliotecaDTO(
                 biblioteca.getId(),
-                toLibroDTOSet(biblioteca.getLibrosRecomendados()),
-                toLibroDTOSet(biblioteca.getLibrosLeidos()),
-                toLibroDTOSet(biblioteca.getLibrosFuturasLecturas())
+                toLibroCreateDTOSet(biblioteca.getLibrosRecomendados()),
+                toLibroCreateDTOSet(biblioteca.getLibrosLeidos()),
+                toLibroCreateDTOSet(biblioteca.getLibrosFuturasLecturas())
         );
     }
 
@@ -139,16 +140,20 @@ public class BibliotecaService {
     private BibliotecaDTO toDTO(Biblioteca b) {
         return new BibliotecaDTO(
                 b.getId(),
-                toLibroDTOSet(b.getLibrosRecomendados()),
-                toLibroDTOSet(b.getLibrosLeidos()),
-                toLibroDTOSet(b.getLibrosFuturasLecturas())
+                toLibroCreateDTOSet(b.getLibrosRecomendados()),
+                toLibroCreateDTOSet(b.getLibrosLeidos()),
+                toLibroCreateDTOSet(b.getLibrosFuturasLecturas())
         );
     }
 
+    // QUITAR ????
     private Set<LibroDTO> toLibroDTOSet(Set<Libro> libros) {
-        return libros.stream().map(this::toLibroDTO).collect(Collectors.toSet());
+        return libros.stream()
+                .map(this::toLibroDTO)
+                .collect(Collectors.toSet());
     }
 
+    // QUITAR ????
     private LibroDTO toLibroDTO(Libro libro) {
         return new LibroDTO(
                 libro.getId(),
@@ -156,6 +161,22 @@ public class BibliotecaService {
                 libro.getAutor(),
                 libro.getPortada(),
                 libro.getCategoria() != null ? libro.getCategoria().getNombre() : null
+        );
+    }
+
+    private Set<LibroCreateDTO> toLibroCreateDTOSet(Set<Libro> libros) {
+        return libros.stream()
+                .map(this::toLibroCreateDTO)
+                .collect(Collectors.toSet());
+    }
+
+    private LibroCreateDTO toLibroCreateDTO(Libro libro) {
+        return new LibroCreateDTO(
+                libro.getId(),
+                libro.getTitulo(),
+                libro.getAutor(),
+                libro.getCategoria() != null ? libro.getCategoria().getId() : null,
+                libro.getPortada()
         );
     }
 

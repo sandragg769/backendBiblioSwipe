@@ -1,20 +1,12 @@
 package com.biblioswipe.backend.mapper;
 
 import com.biblioswipe.backend.dto.PerfilConUsuarioDTO;
-import com.biblioswipe.backend.dto.UsuarioDTO;
+import com.biblioswipe.backend.dto.PerfilUpdateDTO;
 import com.biblioswipe.backend.model.Perfil;
-import com.biblioswipe.backend.model.Usuario;
 
 public class PerfilMapper {
 
     public static PerfilConUsuarioDTO toDTO(Perfil perfil) {
-        Usuario usuario = perfil.getUsuario();
-
-        UsuarioDTO usuarioDTO = new UsuarioDTO(
-                usuario.getUsuario_id(),
-                usuario.getEmail()
-        );
-
         return new PerfilConUsuarioDTO(
                 perfil.getPerfil_id(),
                 perfil.getNombre(),
@@ -22,7 +14,17 @@ public class PerfilMapper {
                 perfil.getFechaNacimiento(),
                 perfil.getCiudad(),
                 perfil.getFotoPerfil(),
-                usuarioDTO
+                perfil.getUsuario() != null ? UsuarioMapper.toDTO(perfil.getUsuario()) : null
         );
     }
+
+    public static Perfil toEntity(PerfilUpdateDTO dto, Perfil perfilExistente) {
+        perfilExistente.setNombre(dto.getNombre());
+        perfilExistente.setApellidos(dto.getApellidos());
+        perfilExistente.setFechaNacimiento(dto.getFechaNacimiento());
+        perfilExistente.setCiudad(dto.getCiudad());
+        perfilExistente.setFotoPerfil(dto.getFotoPerfil());
+        return perfilExistente;
+    }
 }
+

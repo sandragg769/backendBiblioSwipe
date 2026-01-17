@@ -3,6 +3,9 @@ package com.biblioswipe.backend.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.biblioswipe.backend.dto.PerfilDTO;
+import com.biblioswipe.backend.dto.PerfilUpdateDTO;
+import com.biblioswipe.backend.mapper.PerfilMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.biblioswipe.backend.model.Perfil;
@@ -14,52 +17,51 @@ public class PerfilService {
     @Autowired
     private PerfilRepository perfilRepository;
 
-    public PerfilService(PerfilRepository perfilRepository) {
+    private final PerfilMapper perfilMapper;
+
+    public PerfilService(PerfilRepository perfilRepository,
+                         PerfilMapper perfilMapper) {
         this.perfilRepository = perfilRepository;
+        this.perfilMapper = perfilMapper;
     }
 
     // METODOS CRUD
     // obtener todos los perfiles
-    public List<Perfil> getAllPerfiles() {
-        return perfilRepository.findAll();
+    public List<PerfilDTO> getAllPerfiles() {
+        return perfilRepository.findAll()
+                .stream()
+                .map(perfilMapper::toDTO)
+                .toList();
     }
 
     // obtener un perfil en concreto por id
-    public Perfil getPerfilById(Long id) {
-        return perfilRepository.findById(id)
+    public PerfilDTO getPerfilById(Long id) {
+        Perfil perfil = perfilRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
-    }
-
-    // crear un perfil (a la hora de la creación de la cuenta)
-    // ??????? REALMENTE HACE FALTA ???
-    public Perfil createPerfil(Perfil perfil) {
-        return perfilRepository.save(perfil);
+        return perfilMapper.toDTO(perfil);
     }
 
     // actualizar perfil concreto
-    public Perfil updatePerfil(Long id, Perfil actualizado) {
-        Perfil perfil = getPerfilById(id);
+    public PerfilDTO updatePerfil(Long id, PerfilUpdateDTO dto) {
+        Perfil perfil = perfilRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
 
-        perfil.setNombre(actualizado.getNombre());
-        perfil.setApellidos(actualizado.getApellidos());
-        perfil.setFechaNacimiento(actualizado.getFechaNacimiento());
-        perfil.setCiudad(actualizado.getCiudad());
-        perfil.setFotoPerfil(actualizado.getFotoPerfil());
+        perfilMapper.updateEntity(perfil, dto);
 
-        return perfilRepository.save(perfil);
-    }
-
-    // eliminar perfil concreto
-    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
-    public void deletePerfil(Long id) {
-        perfilRepository.deleteById(id);
+        return perfilMapper.toDTO(
+                perfilRepository.save(perfil)
+        );
     }
 
 
     // METODOS DE LÓGICA DE NEGOCIO
     // localizar perfiles con la misma ciudad
-    public List<Perfil> findByCiudad(String ciudad) {
-        return perfilRepository.findByCiudadIgnoreCase(ciudad);
+    public List<PerfilDTO> findByCiudad(String ciudad) {
+        return perfilRepository.findByCiudadIgnoreCase(ciudad)
+                .stream()
+                .map(perfilMapper::toDTO)
+                .toList();
     }
-
 }
+
+

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.biblioswipe.backend.dto.LibroCreateDTO;
 import com.biblioswipe.backend.dto.LibroDTO;
+import com.biblioswipe.backend.mapper.LibroMapper;
 import com.biblioswipe.backend.model.Categoria;
 import com.biblioswipe.backend.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,15 @@ public class LibroService {
 
     private final LibroRepository libroRepository;
     private final CategoriaRepository categoriaRepository;
+    private final LibroMapper libroMapper;
+
 
     public LibroService(LibroRepository libroRepository,
-                        CategoriaRepository categoriaRepository) {
+                        CategoriaRepository categoriaRepository,
+                        LibroMapper libroMapper) {
         this.libroRepository = libroRepository;
         this.categoriaRepository = categoriaRepository;
+        this.libroMapper = libroMapper;
     }
 
     // METODOS CRUD
@@ -29,7 +34,7 @@ public class LibroService {
     public List<LibroDTO> getAllLibros() {
         return libroRepository.findAll()
                 .stream()
-                .map(this::toLibroDTO)
+                .map(libroMapper::toDTO)
                 .toList();
     }
 
@@ -37,7 +42,7 @@ public class LibroService {
     public LibroDTO getLibroById(Long id) {
         Libro libro = libroRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
-        return toLibroDTO(libro);
+        return libroMapper.toDTO(libro);
     }
 
     // crear un libro
@@ -53,7 +58,7 @@ public class LibroService {
         libro.setPortada(dto.getPortada());
         libro.setCategoria(categoria);
 
-        return toLibroDTO(libroRepository.save(libro));
+        return libroMapper.toDTO(libroRepository.save(libro));
     }
 
     // eliminar un libro concreto
@@ -68,7 +73,7 @@ public class LibroService {
     public List<LibroDTO> buscarPorCategoria(String nombreCategoria) {
         return libroRepository.findByCategoria_NombreIgnoreCase(nombreCategoria)
                 .stream()
-                .map(this::toLibroDTO)
+                .map(libroMapper::toDTO)
                 .toList();
     }
 
@@ -76,7 +81,7 @@ public class LibroService {
     public List<LibroDTO> buscarPorAutor(String autor) {
         return libroRepository.findByAutorContainingIgnoreCase(autor)
                 .stream()
-                .map(this::toLibroDTO)
+                .map(libroMapper::toDTO)
                 .toList();
     }
 
@@ -84,18 +89,8 @@ public class LibroService {
     public List<LibroDTO> buscarPorTitulo(String titulo) {
         return libroRepository.findByTituloContainingIgnoreCase(titulo)
                 .stream()
-                .map(this::toLibroDTO)
+                .map(libroMapper::toDTO)
                 .toList();
     }
 
-    // MAPPER
-    private LibroDTO toLibroDTO(Libro libro) {
-        return new LibroDTO(
-                libro.getId(),
-                libro.getTitulo(),
-                libro.getAutor(),
-                libro.getPortada(),
-                libro.getCategoria().getNombre()
-        );
-    }
 }

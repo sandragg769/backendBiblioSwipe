@@ -5,35 +5,28 @@ import java.util.Set;
 // editar biblioteca
 public class BibliotecaDTO {
 
-    private Set<LibroCreateDTO> recomendados;
-    private Set<LibroCreateDTO> leidos;
-    private Set<LibroCreateDTO> futurasLecturas;
+    private Set<LibroDTO> recomendados;
+    private Set<LibroDTO> leidos;
+    private Set<LibroDTO> futurasLecturas;
 
-    public BibliotecaDTO() {
-    }
-
-    public BibliotecaDTO(
-            Set<LibroCreateDTO> recomendados,
-            Set<LibroCreateDTO> leidos,
-            Set<LibroCreateDTO> futurasLecturas
-    ) {
+    public BibliotecaDTO(Set<LibroDTO> recomendados,
+                         Set<LibroDTO> leidos,
+                         Set<LibroDTO> futurasLecturas) {
         this.recomendados = recomendados;
         this.leidos = leidos;
         this.futurasLecturas = futurasLecturas;
     }
 
-    public BibliotecaDTO(Long id, Set<LibroCreateDTO> libroCreateDTOSet, Set<LibroCreateDTO> libroCreateDTOSet1, Set<LibroCreateDTO> libroCreateDTOSet2) {
-    }
-
-    public Set<LibroCreateDTO> getRecomendados() {
+    public Set<LibroDTO> getRecomendados() {
         return recomendados;
     }
 
-    public Set<LibroCreateDTO> getLeidos() {
+    public Set<LibroDTO> getLeidos() {
         return leidos;
     }
 
-    public Set<LibroCreateDTO> getFuturasLecturas() {
+    public Set<LibroDTO> getFuturasLecturas() {
         return futurasLecturas;
     }
 }
+

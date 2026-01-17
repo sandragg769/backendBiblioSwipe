@@ -3,6 +3,7 @@ package com.biblioswipe.backend.service;
 import com.biblioswipe.backend.dto.PerfilDTO;
 import com.biblioswipe.backend.dto.UsuarioDTO;
 import com.biblioswipe.backend.dto.UsuarioMatchDTO;
+import com.biblioswipe.backend.mapper.UsuarioMapper;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Categoria;
 import com.biblioswipe.backend.model.Perfil;
@@ -34,11 +35,15 @@ public class UsuarioService {
     @Autowired
     private BibliotecaRepository bibliotecaRepository;
 
+    private final UsuarioMapper usuarioMapper;
+
     public UsuarioService(UsuarioRepository usuarioRepository,
+                          UsuarioMapper usuarioMapper,
                           CategoriaRepository categoriaRepository,
                           PerfilRepository perfilRepository,
                           BibliotecaRepository bibliotecaRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
         this.categoriaRepository = categoriaRepository;
         this.perfilRepository = perfilRepository;
         this.bibliotecaRepository = bibliotecaRepository;
@@ -201,13 +206,13 @@ public class UsuarioService {
     public List<UsuarioDTO> getAllUsuariosDTO() {
         return usuarioRepository.findAll()
                 .stream()
-                .map(this::toUsuarioDTO)
+                .map(usuarioMapper::toDTO)
                 .toList();
     }
 
     public Optional<UsuarioDTO> getUsuarioDTOById(Long id) {
         return usuarioRepository.findById(id)
-                .map(this::toUsuarioDTO);
+                .map(usuarioMapper::toDTO);
     }
 
     public List<UsuarioDTO> getFavoritosDTO(Long usuarioId) {
@@ -216,32 +221,8 @@ public class UsuarioService {
 
         return usuario.getUsuariosFavoritos()
                 .stream()
-                .map(this::toUsuarioDTO)
+                .map(usuarioMapper::toDTO)
                 .toList();
-    }
-
-    private UsuarioDTO toUsuarioDTO(Usuario usuario) {
-
-        Perfil perfil = usuario.getPerfil();
-
-        PerfilDTO perfilDTO = null;
-        if (perfil != null) {
-            perfilDTO = new PerfilDTO(
-                    perfil.getPerfil_id(),
-                    perfil.getNombre(),
-                    perfil.getApellidos(),
-                    perfil.getFechaNacimiento(),
-                    perfil.getCiudad(),
-                    perfil.getFotoPerfil(),
-                    null // aquí NO metemos usuario otra vez
-            );
-        }
-
-        return new UsuarioDTO(
-                usuario.getUsuario_id(),
-                usuario.getEmail(),
-                perfilDTO
-        );
     }
 
 

@@ -8,93 +8,73 @@ import java.util.stream.Collectors;
 import com.biblioswipe.backend.dto.BibliotecaDTO;
 import com.biblioswipe.backend.dto.LibroCreateDTO;
 import com.biblioswipe.backend.dto.LibroDTO;
+import com.biblioswipe.backend.mapper.BibliotecaMapper;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Libro;
+import com.biblioswipe.backend.model.Usuario;
 import com.biblioswipe.backend.repository.BibliotecaRepository;
 import com.biblioswipe.backend.repository.LibroRepository;
+import com.biblioswipe.backend.repository.UsuarioRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BibliotecaService {
-    private final BibliotecaRepository bibliotecaRepository;
+    private final UsuarioRepository usuarioRepository;
     private final LibroRepository libroRepository;
+    private final BibliotecaMapper bibliotecaMapper;
 
-    public BibliotecaService(BibliotecaRepository bibliotecaRepository,
-                             LibroRepository libroRepository) {
-        this.bibliotecaRepository = bibliotecaRepository;
+    public BibliotecaService(UsuarioRepository usuarioRepository,
+                             LibroRepository libroRepository,
+                             BibliotecaMapper bibliotecaMapper) {
+        this.usuarioRepository = usuarioRepository;
         this.libroRepository = libroRepository;
+        this.bibliotecaMapper = bibliotecaMapper;
     }
 
     // METODOS CRUD
-    // obtener todas las bibliotecas
-    public List<Biblioteca> getAllBibliotecas() {
-        return bibliotecaRepository.findAll();
-    }
+    // no hace falta el getAll, ni un create (se crea al crear usuario),
 
     // obtener una biblioteca por id
-    public BibliotecaDTO getBibliotecaByIdDTO(Long bibliotecaId) {
-        Biblioteca biblioteca = getBibliotecaById(bibliotecaId);
+    public BibliotecaDTO getBibliotecaDeUsuario(Long usuarioId) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        return new BibliotecaDTO(
-                biblioteca.getId(),
-                toLibroCreateDTOSet(biblioteca.getLibrosRecomendados()),
-                toLibroCreateDTOSet(biblioteca.getLibrosLeidos()),
-                toLibroCreateDTOSet(biblioteca.getLibrosFuturasLecturas())
-        );
-    }
-
-    // crear una biblioteca
-    // Crear biblioteca (normalmente NO se usa directamente,
-    // porque se crea automáticamente al crear un usuario)
-    public Biblioteca createBiblioteca(Biblioteca biblioteca) {
-        return bibliotecaRepository.save(biblioteca);
-    }
-
-    public void deleteBiblioteca(Long id) {
-        bibliotecaRepository.deleteById(id);
-    }
-
-    // actualizar una biblioteca
-    // dejar o quitar ???? gpt dice quitar
-    public Biblioteca updateBiblioteca(Long id, Biblioteca actualizada) {
-        Biblioteca existente = bibliotecaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
-        existente.setLibrosLeidos(actualizada.getLibrosLeidos() != null ?
-                actualizada.getLibrosLeidos() : existente.getLibrosLeidos());
-        existente.setLibrosRecomendados(actualizada.getLibrosRecomendados() != null ?
-                actualizada.getLibrosRecomendados() : existente.getLibrosRecomendados());
-        existente.setFuturasLecturas(actualizada.getLibrosFuturasLecturas() != null ?
-                actualizada.getLibrosFuturasLecturas() : existente.getLibrosFuturasLecturas());
-
-        return bibliotecaRepository.save(existente);
+        return bibliotecaMapper.toDTO(usuario.getBiblioteca());
     }
 
 
     // METODOS DE LÓGICA DE NEGOCIO
     // añadir libro a biblioteca
-    public BibliotecaDTO agregarLibroARecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBibliotecaById(bibliotecaId);
-        b.getLibrosRecomendados().add(getLibroById(libroId));
-        return toDTO(bibliotecaRepository.save(b));
+    public void agregarLibroARecomendados(Long usuarioId, Long libroId) {
+        Biblioteca biblioteca = getBiblioteca(usuarioId);
+        Libro libro = getLibro(libroId);
+
+        biblioteca.getLibrosRecomendados().add(libro);
     }
 
-    public BibliotecaDTO agregarLibroALeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBibliotecaById(bibliotecaId);
-        b.getLibrosLeidos().add(getLibroById(libroId));
-        return toDTO(bibliotecaRepository.save(b));
+    public void agregarLibroALeidos(Long usuarioId, Long libroId) {
+        Biblioteca biblioteca = getBiblioteca(usuarioId);
+        Libro libro = getLibro(libroId);
+
+        biblioteca.getLibrosLeidos().add(libro);
     }
 
-    public BibliotecaDTO agregarLibroAFuturas(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBibliotecaById(bibliotecaId);
-        b.getLibrosFuturasLecturas().add(getLibroById(libroId));
-        return toDTO(bibliotecaRepository.save(b));
+    public void agregarLibroAFuturas(Long usuarioId, Long libroId) {
+        Biblioteca biblioteca = getBiblioteca(usuarioId);
+        Libro libro = getLibro(libroId);
+
+        biblioteca.getLibrosFuturasLecturas().add(libro);
     }
 
 
     //util para el controller aparte de los getters propios del model
     // obtener libros de biblioteca por clasificación
-    public Set<Libro> getLibrosRecomendados(Long bibliotecaId) {
-        return getBibliotecaById(bibliotecaId).getLibrosRecomendados();
+    public Set<LibroDTO> getLibrosRecomendados(Long bibliotecaId) {
+        return getBibliotecaById(bibliotecaId)
+                .getLibrosRecomendados()
+                .stream()
+                .map(libroMapper::toDTO)
+                .collect(Collectors.toSet());
     }
 
     public Set<Libro> getLibrosLeidos(Long bibliotecaId) {
@@ -137,47 +117,15 @@ public class BibliotecaService {
                 .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
     }
 
-    private BibliotecaDTO toDTO(Biblioteca b) {
-        return new BibliotecaDTO(
-                b.getId(),
-                toLibroCreateDTOSet(b.getLibrosRecomendados()),
-                toLibroCreateDTOSet(b.getLibrosLeidos()),
-                toLibroCreateDTOSet(b.getLibrosFuturasLecturas())
-        );
+    private Biblioteca getBiblioteca(Long usuarioId) {
+        return usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"))
+                .getBiblioteca();
     }
 
-    // QUITAR ????
-    private Set<LibroDTO> toLibroDTOSet(Set<Libro> libros) {
-        return libros.stream()
-                .map(this::toLibroDTO)
-                .collect(Collectors.toSet());
-    }
-
-    // QUITAR ????
-    private LibroDTO toLibroDTO(Libro libro) {
-        return new LibroDTO(
-                libro.getId(),
-                libro.getTitulo(),
-                libro.getAutor(),
-                libro.getPortada(),
-                libro.getCategoria() != null ? libro.getCategoria().getNombre() : null
-        );
-    }
-
-    private Set<LibroCreateDTO> toLibroCreateDTOSet(Set<Libro> libros) {
-        return libros.stream()
-                .map(this::toLibroCreateDTO)
-                .collect(Collectors.toSet());
-    }
-
-    private LibroCreateDTO toLibroCreateDTO(Libro libro) {
-        return new LibroCreateDTO(
-                libro.getId(),
-                libro.getTitulo(),
-                libro.getAutor(),
-                libro.getCategoria() != null ? libro.getCategoria().getId() : null,
-                libro.getPortada()
-        );
+    private Libro getLibro(Long libroId) {
+        return libroRepository.findById(libroId)
+                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
     }
 
     //guardar cambios biblioteca (NO HACE FALTA SEGÚN GTP, SE HACE CON EL ACTUALIZAR) ??????

@@ -3,7 +3,7 @@ package com.biblioswipe.backend.dto;
 // para buscador y biblioteca
 public class LibroCreateDTO {
 
-    private Long id;
+    // quitar id
     private String titulo;
     private String autor;
     private Long categoriaId;
@@ -12,16 +12,11 @@ public class LibroCreateDTO {
     public LibroCreateDTO() {
     }
 
-    public LibroCreateDTO(Long id, String titulo, String autor, Long categoriaId, String portada) {
-        this.id = id;
+    public LibroCreateDTO(String titulo, String autor, Long categoriaId, String portada) {
         this.titulo = titulo;
         this.autor = autor;
         this.categoriaId = categoriaId;
         this.portada = portada;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getTitulo() {

@@ -4,12 +4,8 @@ import java.util.List;
 
 import com.biblioswipe.backend.dto.LibroCreateDTO;
 import com.biblioswipe.backend.dto.LibroDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.biblioswipe.backend.model.Libro;
-import com.biblioswipe.backend.repository.LibroRepository;
 import com.biblioswipe.backend.service.LibroService;
 
 @RestController
@@ -64,6 +60,7 @@ public class LibroController {
 
 
     // DELETE con ID libro
+    // NO SE NECESITA, LO DEJO POR SI ACASO
     @DeleteMapping("/{id}")
     public void deleteLibro(@PathVariable Long id) {
         libroService.deleteLibro(id);

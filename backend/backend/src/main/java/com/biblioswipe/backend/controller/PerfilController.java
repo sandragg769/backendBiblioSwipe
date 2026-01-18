@@ -2,11 +2,7 @@ package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.PerfilDTO;
 import com.biblioswipe.backend.dto.PerfilUpdateDTO;
-import com.biblioswipe.backend.mapper.PerfilMapper;
-import com.biblioswipe.backend.model.Perfil;
-import com.biblioswipe.backend.model.Usuario;
 import com.biblioswipe.backend.service.PerfilService;
-import com.biblioswipe.backend.service.UsuarioService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +21,7 @@ public class PerfilController {
     }
 
     // GET perfiles
+    // NO SE NECESITA, LO DEJO POR SI ACASO
     @GetMapping
     public List<PerfilDTO> getAllPerfiles() {
         return perfilService.getAllPerfiles();
@@ -37,7 +34,8 @@ public class PerfilController {
     }
 
     // GET con ciudad perfiles
-    // Buscar perfil por ciudad
+    // buscar perfil por ciudad
+    // NO SE NECESITA, LO DEJO POR SI ACASO
     @GetMapping("/ciudad/{ciudad}")
     public List<PerfilDTO> getPerfilesByCiudad(@PathVariable String ciudad) {
         return perfilService.findByCiudad(ciudad);
@@ -54,5 +52,5 @@ public class PerfilController {
         );
     }
 
-    // no delete ni update, no tenemos esas implementaciones todavía
+    // no delete, no tenemos esas implementaciones todavía
 }

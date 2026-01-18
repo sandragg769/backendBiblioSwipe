@@ -62,7 +62,7 @@ public class LibroService {
     }
 
     // eliminar un libro concreto
-    // REALMENTE NO TENEMOS ESTA IDEA PARA LA APP, FUTURA IMPLEMENTACIÓN ???????
+    // NO SE NECESITA, LO DEJO POR SI ACASO
     public void deleteLibro(Long id) {
         libroRepository.deleteById(id);
     }
@@ -77,7 +77,7 @@ public class LibroService {
                 .toList();
     }
 
-    // Buscar libros por autor
+    // buscar libros por autor
     public List<LibroDTO> buscarPorAutor(String autor) {
         return libroRepository.findByAutorContainingIgnoreCase(autor)
                 .stream()
@@ -85,7 +85,7 @@ public class LibroService {
                 .toList();
     }
 
-    // Buscar libros por título
+    // buscar libros por título
     public List<LibroDTO> buscarPorTitulo(String titulo) {
         return libroRepository.findByTituloContainingIgnoreCase(titulo)
                 .stream()

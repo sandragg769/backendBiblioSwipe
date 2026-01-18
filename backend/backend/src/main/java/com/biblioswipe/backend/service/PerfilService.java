@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.biblioswipe.backend.dto.PerfilDTO;
 import com.biblioswipe.backend.dto.PerfilUpdateDTO;
 import com.biblioswipe.backend.mapper.PerfilMapper;
+import com.biblioswipe.backend.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.biblioswipe.backend.model.Perfil;
@@ -39,6 +40,15 @@ public class PerfilService {
         Perfil perfil = perfilRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Perfil no encontrado"));
         return perfilMapper.toDTO(perfil);
+    }
+
+    // crear perfil (para el create usuario)
+    public Perfil crearPerfilInicial(Usuario usuario) {
+
+        Perfil perfil = new Perfil();
+        perfil.setUsuario(usuario);
+
+        return perfilRepository.save(perfil);
     }
 
     // actualizar perfil concreto

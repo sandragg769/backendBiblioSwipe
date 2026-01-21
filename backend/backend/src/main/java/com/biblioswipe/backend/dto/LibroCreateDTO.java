@@ -1,6 +1,6 @@
 package com.biblioswipe.backend.dto;
 
-// para buscador y biblioteca
+// para buscador y biblioteca (crear añadir a biblioteca)
 public class LibroCreateDTO {
 
     // quitar id

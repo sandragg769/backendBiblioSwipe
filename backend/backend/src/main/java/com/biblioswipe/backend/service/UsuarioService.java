@@ -13,8 +13,11 @@ import com.biblioswipe.backend.repository.CategoriaRepository;
 import com.biblioswipe.backend.repository.PerfilRepository;
 import com.biblioswipe.backend.repository.UsuarioRepository;
 
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Comparator;
 import java.util.List;
@@ -51,34 +54,30 @@ public class UsuarioService {
     }
 
     // METODOS CRUD
-    // obtiene todos los usuarios
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    public List<Usuario> getAllUsuarios() {
-        return usuarioRepository.findAll();
-    }
-
-    // busca un usuario por email
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    public Optional<Usuario> findByEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
     // busca un usuario por id
-    public UsuarioDTO getUsuarioDTO(Long id) {
+    // BIEN
+    public UsuarioDTO getUsuario(Long id) {
         return usuarioMapper.toDTO(getUsuarioEntity(id));
     }
 
     public Usuario getUsuarioEntity(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuario no encontrado"
+                ));
     }
 
     // crea un usuario, perfil y biblioteca vacía, (registro)
+    // BIEN
     public UsuarioDTO register(UsuarioRegisterDTO dto) {
 
         usuarioRepository.findByEmail(dto.getEmail())
                 .ifPresent(u -> {
-                    throw new RuntimeException("El email ya está registrado");
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "El email ya está registrado"
+                    );
                 });
 
         Usuario usuario = new Usuario();
@@ -98,41 +97,29 @@ public class UsuarioService {
         return usuarioMapper.toDTO(guardado);
     }
 
-    // actualiza un usuario
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    public Usuario updateUsuario(Long id, Usuario actualizado) {
-        Usuario existente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        existente.setEmail(actualizado.getEmail());
-        existente.setPassword(actualizado.getPassword());
-        return usuarioRepository.save(existente);
-    }
-
-    // borra usuario
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    public void deleteUsuario(Long id) {
-        usuarioRepository.deleteById(id);
-    }
-
-
     // METODOS LÓGICA DE NEGOCIO
     // agregar un usuario a lista de usuarios favoritos de un usuario
+    // BIEN
+    @Transactional
     public void agregarFavorito(Long usuarioId, Long favoritoId) {
+
+        if (usuarioId.equals(favoritoId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "No puedes agregarte a ti mismo a favoritos"
+            );
+        }
+
         Usuario usuario = getUsuarioEntity(usuarioId);
         Usuario favorito = getUsuarioEntity(favoritoId);
 
-        if (usuario.getUsuariosFavoritos().contains(favorito)) {
-            return;
-        }
-
         usuario.getUsuariosFavoritos().add(favorito);
-        usuarioRepository.save(usuario);
     }
 
     // devuelve lista de usuarios favoritos de un usuario (like)
+    // BIEN
     public List<UsuarioDTO> getFavoritos(Long usuarioId) {
         Usuario usuario = getUsuarioEntity(usuarioId);
-
         return usuario.getUsuariosFavoritos()
                 .stream()
                 .map(usuarioMapper::toDTO)
@@ -140,13 +127,21 @@ public class UsuarioService {
     }
 
     // login
-    public UsuarioDTO login(String email, String password) {
+    // BIEN
+    public UsuarioDTO login(LoginRequestDTO dto) {
 
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Credenciales incorrectas"));
+        Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "Credenciales incorrectas"
+                ));
 
-        if (!usuario.getPassword().equals(password)) {
-            throw new RuntimeException("Credenciales incorrectas");
+        // Nota: en producción usar BCrypt
+        if (!usuario.getPassword().equals(dto.getPassword())) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Credenciales incorrectas"
+            );
         }
 
         return usuarioMapper.toDTO(usuario);
@@ -158,12 +153,11 @@ public class UsuarioService {
 
         return usuarioRepository.findAll().stream()
                 .filter(u -> u.getBiblioteca() != null)
-                .sorted((u1, u2) -> {
-                    long c1 = contarCategoria(u1.getBiblioteca(), nombreCategoria);
-                    long c2 = contarCategoria(u2.getBiblioteca(), nombreCategoria);
-                    return Long.compare(c2, c1); // DESC
-                })
                 .filter(u -> contarCategoria(u.getBiblioteca(), nombreCategoria) > 0)
+                .sorted((u1, u2) -> Long.compare(
+                        contarCategoria(u2.getBiblioteca(), nombreCategoria),
+                        contarCategoria(u1.getBiblioteca(), nombreCategoria)
+                ))
                 .map(usuarioMapper::toDTO)
                 .toList();
     }

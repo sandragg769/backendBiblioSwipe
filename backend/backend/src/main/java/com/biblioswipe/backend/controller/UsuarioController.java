@@ -1,7 +1,6 @@
 package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.*;
-import com.biblioswipe.backend.model.Usuario;
 import com.biblioswipe.backend.service.UsuarioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,15 +23,14 @@ public class UsuarioController {
     // POST
     // Crear nuevo usuario
     @PostMapping("/register")
-    public ResponseEntity<UsuarioDTO> register(
-            @RequestBody UsuarioRegisterDTO dto
-    ) {
-        return ResponseEntity.ok(usuarioService.register(dto));
+    public ResponseEntity<UsuarioDTO> register(@RequestBody UsuarioRegisterDTO dto) {
+        // Usamos CREATED (201) porque estamos creando un recurso nuevo
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.register(dto));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioDTO> getUsuariobyId(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.getUsuarioDTO(id));
+    public ResponseEntity<UsuarioDTO> getUsuarioById(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.getUsuario(id));
     }
 
     // POST con ID de usuario los favoritos
@@ -43,35 +41,26 @@ public class UsuarioController {
             @PathVariable Long favoritoId
     ) {
         usuarioService.agregarFavorito(id, favoritoId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build(); // 204 No Content es estándar para void
     }
 
     // GET con ID de usuario los favoritos
     // Ver favoritos de un usuario
     @GetMapping("/{id}/favoritos")
-    public ResponseEntity<List<UsuarioDTO>> getFavoritos(
-            @PathVariable Long id
-    ) {
+    public ResponseEntity<List<UsuarioDTO>> getFavoritos(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.getFavoritos(id));
     }
 
     //LOGIN
     @PostMapping("/login")
-    public ResponseEntity<UsuarioDTO> login(
-            @RequestBody LoginRequestDTO dto
-    ) {
-        return ResponseEntity.ok(
-                usuarioService.login(dto.getEmail(), dto.getPassword())
-        );
+    public ResponseEntity<UsuarioDTO> login(@RequestBody LoginRequestDTO dto) {
+        // Ahora pasamos el objeto DTO completo al service
+        return ResponseEntity.ok(usuarioService.login(dto));
     }
 
     @GetMapping("/match/categoria/{nombre}")
-    public ResponseEntity<List<UsuarioDTO>> matchPorCategoria(
-            @PathVariable String nombre
-    ) {
-        return ResponseEntity.ok(
-                usuarioService.buscarUsuariosPorCategoria(nombre)
-        );
+    public ResponseEntity<List<UsuarioDTO>> matchPorCategoria(@PathVariable String nombre) {
+        return ResponseEntity.ok(usuarioService.buscarUsuariosPorCategoria(nombre));
     }
 
     // otros getters

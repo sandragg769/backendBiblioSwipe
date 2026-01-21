@@ -1,6 +1,6 @@
 package com.biblioswipe.backend.dto;
 
-
+// para mostrar
 public class LibroDTO {
 
     private Long id;

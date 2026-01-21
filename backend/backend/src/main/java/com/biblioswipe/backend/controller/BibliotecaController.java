@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/bibliotecas")
+@RequestMapping("/bibliotecas")
 @CrossOrigin(origins = "*")
 public class BibliotecaController {
 
@@ -25,47 +25,39 @@ public class BibliotecaController {
 
     // GET con ID biblioteca
     // GET biblioteca por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<BibliotecaDTO> getBibliotecaById(@PathVariable Long id) {
-        return ResponseEntity.ok(bibliotecaService.getBibliotecaDTOById(id));
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<BibliotecaDTO> getBibliotecaByUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(bibliotecaService.getBibliotecaByUsuario(usuarioId));
     }
 
     // POST con ID libro a futuras lecturas
     // Añadir libro a futuras lecturas
-    @PostMapping("/{id}/futuras/{libroId}")
+    @PostMapping("/usuario/{usuarioId}/futuras/{libroId}")
     public ResponseEntity<BibliotecaDTO> addFutura(
-            @PathVariable Long id,
+            @PathVariable Long usuarioId,
             @PathVariable Long libroId) {
-
-        return ResponseEntity.ok(
-                bibliotecaService.agregarLibroAFuturas(id, libroId)
-        );
+        return ResponseEntity.ok(bibliotecaService.agregarLibroAFuturas(usuarioId, libroId));
     }
 
     // POST con ID libro a leídos
     // Añadir libro a leídos
-    @PostMapping("/{id}/leidos/{libroId}")
+    @PostMapping("/usuario/{usuarioId}/leidos/{libroId}")
     public ResponseEntity<BibliotecaDTO> addLeido(
-            @PathVariable Long id,
+            @PathVariable Long usuarioId,
             @PathVariable Long libroId) {
-
-        return ResponseEntity.ok(
-                bibliotecaService.agregarLibroALeidos(id, libroId)
-        );
+        return ResponseEntity.ok(bibliotecaService.agregarLibroALeidos(usuarioId, libroId));
     }
 
     // POST con ID libro a recomendados
     // Añadir libro a recomendados
-    @PostMapping("/{id}/recomendados/{libroId}")
+    @PostMapping("/usuario/{usuarioId}/recomendados/{libroId}")
     public ResponseEntity<BibliotecaDTO> addRecomendado(
-            @PathVariable Long id,
+            @PathVariable Long usuarioId,
             @PathVariable Long libroId) {
-
-        return ResponseEntity.ok(
-                bibliotecaService.agregarLibroARecomendados(id, libroId)
-        );
+        return ResponseEntity.ok(bibliotecaService.agregarLibroARecomendados(usuarioId, libroId));
     }
 
+    /*
     // GET con ID libros leídos
     // Ver libros leídos
     @GetMapping("/{id}/leidos")
@@ -86,41 +78,34 @@ public class BibliotecaController {
     public ResponseEntity<Set<LibroDTO>> getFuturasLecturas(@PathVariable Long id) {
         return ResponseEntity.ok(bibliotecaService.getFuturasLecturas(id));
     }
+    */
+
 
     // Eliminar libro de valda futuras lecturas
     //DELETE con ID de biblioteca futuras lecturas con ID específico de libro
-    @DeleteMapping("/{id}/futuras/{libroId}")
+    @DeleteMapping("/usuario/{usuarioId}/futuras/{libroId}")
     public ResponseEntity<BibliotecaDTO> removeFutura(
-            @PathVariable Long id,
+            @PathVariable Long usuarioId,
             @PathVariable Long libroId) {
-
-        return ResponseEntity.ok(
-                bibliotecaService.eliminarLibroDeFuturas(id, libroId)
-        );
+        return ResponseEntity.ok(bibliotecaService.eliminarLibroDeFuturas(usuarioId, libroId));
     }
 
     // Eliminar libro de valda leídos
     //DELETE con ID de biblioteca leídos con ID específico de libro
-    @DeleteMapping("/{id}/leidos/{libroId}")
+    @DeleteMapping("/usuario/{usuarioId}/leidos/{libroId}")
     public ResponseEntity<BibliotecaDTO> removeLeido(
-            @PathVariable Long id,
+            @PathVariable Long usuarioId,
             @PathVariable Long libroId) {
-
-        return ResponseEntity.ok(
-                bibliotecaService.eliminarLibroDeLeidos(id, libroId)
-        );
+        return ResponseEntity.ok(bibliotecaService.eliminarLibroDeLeidos(usuarioId, libroId));
     }
 
     // Eliminar libro de valda recomendados
     //DELETE con ID de biblioteca recomendados con ID específico de libro
-    @DeleteMapping("/{id}/recomendados/{libroId}")
+    @DeleteMapping("/usuario/{usuarioId}/recomendados/{libroId}")
     public ResponseEntity<BibliotecaDTO> removeRecomendado(
-            @PathVariable Long id,
+            @PathVariable Long usuarioId,
             @PathVariable Long libroId) {
-
-        return ResponseEntity.ok(
-                bibliotecaService.eliminarLibroDeRecomendados(id, libroId)
-        );
+        return ResponseEntity.ok(bibliotecaService.eliminarLibroDeRecomendados(usuarioId, libroId));
     }
 
 }

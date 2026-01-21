@@ -22,8 +22,8 @@ public class CategoriaController {
 
     // GET categorías
     @GetMapping
-    public List<CategoriaDTO> getAllCategorias() {
-        return categoriaService.getAllCategorias();
+    public ResponseEntity<List<CategoriaDTO>> getAllCategorias() {
+        return ResponseEntity.ok(categoriaService.getAllCategorias());
     }
 
     // GET con ID categorías
@@ -37,36 +37,5 @@ public class CategoriaController {
     @GetMapping("/nombre/{nombre}")
     public ResponseEntity<CategoriaDTO> getCategoriaByNombre(@PathVariable String nombre) {
         return ResponseEntity.ok(categoriaService.getCategoriaByNombre(nombre));
-    }
-
-    // POST categoría
-    @PostMapping
-    public ResponseEntity<CategoriaDTO> createCategoria(
-            @RequestBody CategoriaDTO dto) {
-
-        return ResponseEntity.ok(
-                categoriaService.createCategoria(dto)
-        );
-    }
-
-    // UPDATE
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoriaDTO> updateCategoria(
-            @PathVariable Long id,
-            @RequestBody CategoriaDTO dto) {
-
-        return ResponseEntity.ok(
-                categoriaService.updateCategoria(id, dto)
-        );
-    }
-
-
-    // DELETE con ID categoría
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategoria(@PathVariable Long id) {
-        categoriaService.deleteCategoria(id);
-        return ResponseEntity.noContent().build();
     }
 }

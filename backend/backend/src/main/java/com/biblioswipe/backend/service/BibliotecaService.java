@@ -16,34 +16,53 @@ import com.biblioswipe.backend.model.Usuario;
 import com.biblioswipe.backend.repository.BibliotecaRepository;
 import com.biblioswipe.backend.repository.LibroRepository;
 import com.biblioswipe.backend.repository.UsuarioRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class BibliotecaService {
     private final BibliotecaRepository bibliotecaRepository;
+    private final UsuarioRepository usuarioRepository;
     private final LibroRepository libroRepository;
     private final BibliotecaMapper bibliotecaMapper;
-    private final LibroMapper libroMapper;
 
-    public BibliotecaService(BibliotecaRepository bibliotecaRepository,
-                             LibroRepository libroRepository,
-                             BibliotecaMapper bibliotecaMapper,
-                             LibroMapper libroMapper) {
+    public BibliotecaService(
+            BibliotecaRepository bibliotecaRepository,
+            UsuarioRepository usuarioRepository,
+            LibroRepository libroRepository,
+            BibliotecaMapper bibliotecaMapper
+    ) {
         this.bibliotecaRepository = bibliotecaRepository;
+        this.usuarioRepository = usuarioRepository;
         this.libroRepository = libroRepository;
         this.bibliotecaMapper = bibliotecaMapper;
-        this.libroMapper = libroMapper;
     }
 
     // METODOS CRUD
-    // no hace falta el getAll, ni un create (se crea al crear usuario), ni el delete, ni update???
-
     // obtener una biblioteca por id
-    public BibliotecaDTO getBibliotecaDTOById(Long bibliotecaId) {
-        return bibliotecaMapper.toDTO(getBibliotecaById(bibliotecaId));
+    // BIEN
+    public BibliotecaDTO getBibliotecaByUsuario(Long usuarioId) {
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuario no encontrado"
+                ));
+
+        if (usuario.getBiblioteca() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El usuario no tiene biblioteca"
+            );
+        }
+
+        return bibliotecaMapper.toDTO(usuario.getBiblioteca());
     }
 
-    // rear biblioteca (para el create usuario)
+    // crear biblioteca (para el create usuario)
+    // no dto ya que trabaja dentro de otro servicio este metodo
+    // BIEN
     public Biblioteca crearBibliotecaInicial(Usuario usuario) {
 
         Biblioteca biblioteca = new Biblioteca();
@@ -55,31 +74,29 @@ public class BibliotecaService {
 
     // METODOS DE LÓGICA DE NEGOCIO
     // añadir libro a biblioteca
-    public void agregarLibroARecomendados(Long usuarioId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(usuarioId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosRecomendados().add(libro);
+    // BIEN
+    public BibliotecaDTO agregarLibroAFuturas(Long usuarioId, Long libroId) {
+        Biblioteca b = getBibliotecaEntity(usuarioId);
+        b.getLibrosFuturasLecturas().add(getLibro(libroId));
+        return bibliotecaMapper.toDTO(bibliotecaRepository.save(b));
     }
 
-    public void agregarLibroALeidos(Long usuarioId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(usuarioId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosLeidos().add(libro);
+    public BibliotecaDTO agregarLibroALeidos(Long usuarioId, Long libroId) {
+        Biblioteca b = getBibliotecaEntity(usuarioId);
+        b.getLibrosLeidos().add(getLibro(libroId));
+        return bibliotecaMapper.toDTO(bibliotecaRepository.save(b));
     }
 
-    public void agregarLibroAFuturas(Long usuarioId, Long libroId) {
-        Biblioteca biblioteca = getBibliotecaById(usuarioId);
-        Libro libro = getLibroById(libroId);
-
-        biblioteca.getLibrosFuturasLecturas().add(libro);
+    public BibliotecaDTO agregarLibroARecomendados(Long usuarioId, Long libroId) {
+        Biblioteca b = getBibliotecaEntity(usuarioId);
+        b.getLibrosRecomendados().add(getLibro(libroId));
+        return bibliotecaMapper.toDTO(bibliotecaRepository.save(b));
     }
 
-
+    // NO NECESARIO !!!!
     //util para el controller aparte de los getters propios del model
     // obtener libros de biblioteca por clasificación
-    public Set<LibroDTO> getLibrosRecomendados(Long bibliotecaId) {
+    /*public Set<LibroDTO> getLibrosRecomendados(Long bibliotecaId) {
         return getBibliotecaById(bibliotecaId)
                 .getLibrosRecomendados()
                 .stream()
@@ -101,38 +118,55 @@ public class BibliotecaService {
                 .stream()
                 .map(libroMapper::toDTO)
                 .collect(Collectors.toSet());
-    }
+    }*/
 
 
     // eliminar libros de biblioteca
-    public BibliotecaDTO eliminarLibroDeRecomendados(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBibliotecaById(bibliotecaId);
-        b.getLibrosRecomendados().remove(getLibroById(libroId));
+    // BIEN
+    public BibliotecaDTO eliminarLibroDeFuturas(Long usuarioId, Long libroId) {
+        Biblioteca b = getBibliotecaEntity(usuarioId);
+        b.getLibrosFuturasLecturas().remove(getLibro(libroId));
         return bibliotecaMapper.toDTO(bibliotecaRepository.save(b));
     }
 
-    public BibliotecaDTO eliminarLibroDeLeidos(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBibliotecaById(bibliotecaId);
-        b.getLibrosLeidos().remove(getLibroById(libroId));
+    public BibliotecaDTO eliminarLibroDeLeidos(Long usuarioId, Long libroId) {
+        Biblioteca b = getBibliotecaEntity(usuarioId);
+        b.getLibrosLeidos().remove(getLibro(libroId));
         return bibliotecaMapper.toDTO(bibliotecaRepository.save(b));
     }
 
-    public BibliotecaDTO eliminarLibroDeFuturas(Long bibliotecaId, Long libroId) {
-        Biblioteca b = getBibliotecaById(bibliotecaId);
-        b.getLibrosFuturasLecturas().remove(getLibroById(libroId));
+    public BibliotecaDTO eliminarLibroDeRecomendados(Long usuarioId, Long libroId) {
+        Biblioteca b = getBibliotecaEntity(usuarioId);
+        b.getLibrosRecomendados().remove(getLibro(libroId));
         return bibliotecaMapper.toDTO(bibliotecaRepository.save(b));
     }
 
 
     // METODO AUXILIAR
-    private Biblioteca getBibliotecaById(Long id) {
-        return bibliotecaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Biblioteca no encontrada"));
+    private Libro getLibro(Long libroId) {
+        return libroRepository.findById(libroId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Libro no encontrado"
+                ));
     }
 
-    private Libro getLibroById(Long libroId) {
-        return libroRepository.findById(libroId)
-                .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
+    private Biblioteca getBibliotecaEntity(Long usuarioId) {
+
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Usuario no encontrado"
+                ));
+
+        if (usuario.getBiblioteca() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "El usuario no tiene biblioteca"
+            );
+        }
+
+        return usuario.getBiblioteca();
     }
 }
 

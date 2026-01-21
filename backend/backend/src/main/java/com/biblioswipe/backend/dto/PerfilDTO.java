@@ -10,7 +10,7 @@ public class PerfilDTO {
     private LocalDate fechaNacimiento;
     private String ciudad;
     private String fotoPerfil;
-    private UsuarioDTO usuario;
+    // private UsuarioDTO usuario;
 
     public PerfilDTO(
             Long perfilId,
@@ -18,8 +18,8 @@ public class PerfilDTO {
             String apellidos,
             LocalDate fechaNacimiento,
             String ciudad,
-            String fotoPerfil,
-            UsuarioDTO usuario
+            String fotoPerfil
+            //UsuarioDTO usuario
     ) {
         this.perfilId = perfilId;
         this.nombre = nombre;
@@ -27,7 +27,7 @@ public class PerfilDTO {
         this.fechaNacimiento = fechaNacimiento;
         this.ciudad = ciudad;
         this.fotoPerfil = fotoPerfil;
-        this.usuario = usuario;
+        //this.usuario = usuario;
     }
 
     public Long getPerfilId() {
@@ -54,8 +54,5 @@ public class PerfilDTO {
         return fotoPerfil;
     }
 
-    public UsuarioDTO getUsuario() {
-        return usuario;
-    }
 }
 

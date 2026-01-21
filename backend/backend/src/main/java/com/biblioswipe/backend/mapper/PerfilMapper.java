@@ -7,24 +7,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PerfilMapper {
-
-    private final UsuarioMapper usuarioMapper;
-
-    public PerfilMapper(UsuarioMapper usuarioMapper) {
-        this.usuarioMapper = usuarioMapper;
-    }
-
     public PerfilDTO toDTO(Perfil perfil) {
+        if (perfil == null) return null;
         return new PerfilDTO(
                 perfil.getPerfil_id(),
                 perfil.getNombre(),
                 perfil.getApellidos(),
-                perfil.getFechaNacimiento(),
+                perfil.getFechaNacimiento(), // Asegúrate que el DTO acepte LocalDate o conviértelo a String
                 perfil.getCiudad(),
-                perfil.getFotoPerfil(),
-                perfil.getUsuario() != null
-                        ? usuarioMapper.toDTO(perfil.getUsuario())
-                        : null
+                perfil.getFotoPerfil()
+                //perfil.getUsuario() != null ? perfil.getUsuario().getUsuario_id() : null // Solo el ID
         );
     }
 

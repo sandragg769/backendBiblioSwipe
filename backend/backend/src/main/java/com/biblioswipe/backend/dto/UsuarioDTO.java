@@ -4,10 +4,12 @@ package com.biblioswipe.backend.dto;
 public class UsuarioDTO {
     private Long id;
     private String email;
+    private PerfilDTO perfil;
 
-    public UsuarioDTO(Long id, String email) {
+    public UsuarioDTO(Long id, String email, PerfilDTO perfil) {
         this.id = id;
         this.email = email;
+        this.perfil = perfil;
     }
 
     public Long getId() {
@@ -16,5 +18,9 @@ public class UsuarioDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public PerfilDTO getPerfil() {
+        return perfil;
     }
 }

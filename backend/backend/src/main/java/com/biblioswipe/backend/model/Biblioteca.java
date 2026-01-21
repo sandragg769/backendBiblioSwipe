@@ -23,15 +23,12 @@ public class Biblioteca {
 
     // tres listas de libros (relación N:M con tabla intermedia)
     @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<Libro> librosRecomendados = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<Libro> librosLeidos = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
     private Set<Libro> librosFuturasLecturas = new HashSet<>();
 
     // constructores

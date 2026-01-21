@@ -6,13 +6,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UsuarioMapper {
+    private final PerfilMapper perfilMapper;
+
+    public UsuarioMapper(PerfilMapper perfilMapper) {
+        this.perfilMapper = perfilMapper;
+    }
 
     public UsuarioDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
-
         return new UsuarioDTO(
                 usuario.getUsuario_id(),
-                usuario.getEmail()
+                usuario.getEmail(),
+                perfilMapper.toDTO(usuario.getPerfil()) // Faltaba este parámetro
         );
     }
 }

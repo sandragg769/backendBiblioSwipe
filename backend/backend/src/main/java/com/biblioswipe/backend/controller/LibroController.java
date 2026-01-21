@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.biblioswipe.backend.dto.LibroCreateDTO;
 import com.biblioswipe.backend.dto.LibroDTO;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.biblioswipe.backend.service.LibroService;
@@ -21,48 +23,43 @@ public class LibroController {
 
     // GET libro
     @GetMapping
-    public List<LibroDTO> getAllLibros() {
-        return libroService.getAllLibros();
+    public ResponseEntity<List<LibroDTO>> getAllLibros() {
+        return ResponseEntity.ok(libroService.getAllLibros());
     }
 
     // GET con ID libro
     @GetMapping("/{id}")
-    public LibroDTO getLibroById(@PathVariable Long id) {
-        return libroService.getLibroById(id);
+    public ResponseEntity<LibroDTO> getLibroById(@PathVariable Long id) {
+        return ResponseEntity.ok(libroService.getLibroById(id));
     }
 
     // GET con autor libro
     // Buscar por autor
     @GetMapping("/autor/{autor}")
-    public List<LibroDTO> buscarPorAutor(@PathVariable String autor) {
-        return libroService.buscarPorAutor(autor);
+    public ResponseEntity<List<LibroDTO>> buscarPorAutor(@PathVariable String autor) {
+        return ResponseEntity.ok(libroService.buscarPorAutor(autor));
     }
 
     // GET con título libro
     // Buscar por título
-    @GetMapping("/titulo/{titulo}")
-    public List<LibroDTO> buscarPorTitulo(@PathVariable String titulo) {
-        return libroService.buscarPorTitulo(titulo);
+    @GetMapping("/buscar")
+    public ResponseEntity<List<LibroDTO>> buscar(@RequestParam String query) {
+        // Este usa el metodo que busca tanto por título como por autor
+        return ResponseEntity.ok(libroService.buscarPorLibros(query));
     }
 
     // GET con categoria libro
     // Buscar por categoría
-    @GetMapping("/categoria/{nombre}")
-    public List<LibroDTO> buscarPorCategoria(@PathVariable String nombre) {
-        return libroService.buscarPorCategoria(nombre);
+    @GetMapping("/categoria/{id}")
+    public ResponseEntity<List<LibroDTO>> getLibrosByCategoria(@PathVariable Long id) {
+        // Usamos el ID de la categoría (Long) porque es lo que envía el front (1, 2, 3...)
+        return ResponseEntity.ok(libroService.getLibrosByCategoria(id));
     }
 
     // POST libro
     @PostMapping
-    public LibroDTO createLibro(@RequestBody LibroCreateDTO dto) {
-        return libroService.createLibro(dto);
-    }
-
-
-    // DELETE con ID libro
-    // NO SE NECESITA, LO DEJO POR SI ACASO
-    @DeleteMapping("/{id}")
-    public void deleteLibro(@PathVariable Long id) {
-        libroService.deleteLibro(id);
+    public ResponseEntity<LibroDTO> crearLibro(@RequestBody LibroCreateDTO dto) {
+        // Usamos HttpStatus.CREATED (201)
+        return ResponseEntity.status(HttpStatus.CREATED).body(libroService.crearLibro(dto));
     }
 }

@@ -1,8 +1,6 @@
 package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.CategoriaDTO;
-import com.biblioswipe.backend.model.Categoria;
-import com.biblioswipe.backend.model.Libro;
 import com.biblioswipe.backend.service.CategoriaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

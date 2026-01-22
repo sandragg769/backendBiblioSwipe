@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
-@Table(name = "libros")
 public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,70 +53,4 @@ public class Libro {
         this.portada = portada;
         this.categoria = categoria;
     }
-
-    // getters y setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getAutor() {
-        return autor;
-    }
-
-    public void setAutor(String autor) {
-        this.autor = autor;
-    }
-
-    public String getPortada() {
-        return portada;
-    }
-
-    public void setPortada(String portada) {
-        this.portada = portada;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
-
-    public Set<Biblioteca> getBibliotecasRecomendados() {
-        return bibliotecasRecomendados;
-    }
-
-    public void setBibliotecasRecomendados(Set<Biblioteca> bibliotecasRecomendados) {
-        this.bibliotecasRecomendados = bibliotecasRecomendados;
-    }
-
-    public Set<Biblioteca> getBibliotecasLeidos() {
-        return bibliotecasLeidos;
-    }
-
-    public void setBibliotecasLeidos(Set<Biblioteca> bibliotecasLeidos) {
-        this.bibliotecasLeidos = bibliotecasLeidos;
-    }
-
-    public Set<Biblioteca> getBibliotecasFuturasLecturas() {
-        return bibliotecasFuturasLecturas;
-    }
-
-    public void setBibliotecasFuturasLecturas(Set<Biblioteca> bibliotecasFuturasLecturas) {
-        this.bibliotecasFuturasLecturas = bibliotecasFuturasLecturas;
-    }
-
 }

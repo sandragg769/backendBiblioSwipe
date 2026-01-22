@@ -1,15 +1,9 @@
 package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.BibliotecaDTO;
-import com.biblioswipe.backend.dto.LibroDTO;
-import com.biblioswipe.backend.model.Biblioteca;
-import com.biblioswipe.backend.model.Libro;
 import com.biblioswipe.backend.service.BibliotecaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/bibliotecas")

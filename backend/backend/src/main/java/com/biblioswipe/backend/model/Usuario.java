@@ -5,14 +5,15 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "usuario_id"
 )
 //representa los datos y las entidades
+@Data
 @Entity
-@Table(name = "usuarios")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,70 +58,5 @@ public class Usuario {
     public Usuario(String email, String password) {
         this.email = email;
         this.password = password;
-    }
-
-    // getters y setters
-    public Long getUsuario_id() {
-        return usuario_id;
-    }
-
-    public void setUsuario_id(Long usuario_id) {
-        this.usuario_id = usuario_id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Perfil getPerfil() {
-        return perfil;
-    }
-
-    public void setPerfil(Perfil perfil) {
-        this.perfil = perfil;
-    }
-
-    public Biblioteca getBiblioteca() {
-        return biblioteca;
-    }
-
-    public void setBiblioteca(Biblioteca biblioteca) {
-        this.biblioteca = biblioteca;
-    }
-
-    public Set<Categoria> getCategorias() {
-        return categorias;
-    }
-
-    public void setCategorias(Set<Categoria> categorias) {
-        this.categorias = categorias;
-    }
-
-    public Set<Usuario> getUsuariosFavoritos() {
-        return usuariosFavoritos;
-    }
-
-    public void setUsuariosFavoritos(Set<Usuario> usuariosFavoritos) {
-        this.usuariosFavoritos = usuariosFavoritos;
-    }
-
-    public Set<Usuario> getEsFavoritoDe() {
-        return esFavoritoDe;
-    }
-
-    public void setEsFavoritoDe(Set<Usuario> esFavoritoDe) {
-        this.esFavoritoDe = esFavoritoDe;
     }
 }

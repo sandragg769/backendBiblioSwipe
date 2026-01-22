@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
-@Table(name = "categoria")
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
-@Table(name = "biblioteca")
 public class Biblioteca {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,45 +40,5 @@ public class Biblioteca {
         this.usuario = usuario;
     }
 
-    // getters y setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Set<Libro> getLibrosRecomendados() {
-        return librosRecomendados;
-    }
-
-    public void setLibrosRecomendados(Set<Libro> librosRecomendados) {
-        this.librosRecomendados = librosRecomendados;
-    }
-
-    public Set<Libro> getLibrosLeidos() {
-        return librosLeidos;
-    }
-
-    public void setLibrosLeidos(Set<Libro> librosLeidos) {
-        this.librosLeidos = librosLeidos;
-    }
-
-    public Set<Libro> getLibrosFuturasLecturas() {
-        return librosFuturasLecturas;
-    }
-
-    public void setFuturasLecturas(Set<Libro> librosFuturasLecturas) {
-        this.librosFuturasLecturas = librosFuturasLecturas;
-    }
 
 }

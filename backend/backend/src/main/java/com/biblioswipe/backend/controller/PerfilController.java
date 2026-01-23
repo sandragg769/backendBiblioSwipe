@@ -3,6 +3,7 @@ package com.biblioswipe.backend.controller;
 import com.biblioswipe.backend.dto.PerfilDTO;
 import com.biblioswipe.backend.dto.PerfilUpdateDTO;
 import com.biblioswipe.backend.service.PerfilService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class PerfilController {
 
     private final PerfilService perfilService;
 
-
+    @Autowired
     public PerfilController(PerfilService perfilService) {
         this.perfilService = perfilService;
     }

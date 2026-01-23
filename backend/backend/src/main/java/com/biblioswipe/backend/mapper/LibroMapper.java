@@ -2,6 +2,7 @@ package com.biblioswipe.backend.mapper;
 
 import com.biblioswipe.backend.dto.LibroDTO;
 import com.biblioswipe.backend.model.Libro;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

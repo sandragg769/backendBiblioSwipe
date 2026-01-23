@@ -27,13 +27,13 @@ public class Usuario {
     private String password;
 
     // relación 1:1 con perfil
-    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
+    // QUITAR JSONIGNORE DESPUÉS DE EXCEPTION DE SANDRA
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Perfil perfil;
 
     // relación 1:1 con la biblioteca
-    @OneToOne(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JsonIgnore
+    // QUITAR JSONIGNORE DESPUÉS DE EXCEPTION DE SANDRA
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private Biblioteca biblioteca;
 
     // relación N:M con categorias

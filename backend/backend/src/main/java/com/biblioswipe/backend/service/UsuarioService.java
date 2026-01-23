@@ -5,12 +5,8 @@ import com.biblioswipe.backend.mapper.BibliotecaMapper;
 import com.biblioswipe.backend.mapper.PerfilMapper;
 import com.biblioswipe.backend.mapper.UsuarioMapper;
 import com.biblioswipe.backend.model.Biblioteca;
-import com.biblioswipe.backend.model.Categoria;
 import com.biblioswipe.backend.model.Perfil;
 import com.biblioswipe.backend.model.Usuario;
-import com.biblioswipe.backend.repository.BibliotecaRepository;
-import com.biblioswipe.backend.repository.CategoriaRepository;
-import com.biblioswipe.backend.repository.PerfilRepository;
 import com.biblioswipe.backend.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -30,24 +26,18 @@ import java.util.stream.Stream;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final PerfilService perfilService;
-    private final BibliotecaService bibliotecaService;
     private final UsuarioMapper usuarioMapper;
     private final PerfilMapper perfilMapper;
     private final BibliotecaMapper bibliotecaMapper;
 
-
+    @Autowired
     public UsuarioService(
             UsuarioRepository usuarioRepository,
-            PerfilService perfilService,
-            BibliotecaService bibliotecaService,
             UsuarioMapper usuarioMapper,
             PerfilMapper perfilMapper,
             BibliotecaMapper bibliotecaMapper
     ) {
         this.usuarioRepository = usuarioRepository;
-        this.perfilService = perfilService;
-        this.bibliotecaService = bibliotecaService;
         this.usuarioMapper = usuarioMapper;
         this.perfilMapper = perfilMapper;
         this.bibliotecaMapper = bibliotecaMapper;
@@ -72,30 +62,28 @@ public class UsuarioService {
     // BIEN
     public UsuarioDTO register(UsuarioRegisterDTO dto) {
 
-        usuarioRepository.findByEmail(dto.getEmail())
-                .ifPresent(u -> {
-                    throw new ResponseStatusException(
-                            HttpStatus.CONFLICT,
-                            "El email ya está registrado"
-                    );
-                });
+        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ya registrado");
+        }
 
         Usuario usuario = new Usuario();
         usuario.setEmail(dto.getEmail());
         usuario.setPassword(dto.getPassword());
 
+        Perfil perfil = new Perfil();
+        perfil.setUsuario(usuario);
+
+        Biblioteca biblioteca = new Biblioteca();
+        biblioteca.setUsuario(usuario);
+
+        usuario.setPerfil(perfil);
+        usuario.setBiblioteca(biblioteca);
+
         Usuario guardado = usuarioRepository.save(usuario);
-
-        Perfil perfil = perfilService.crearPerfilInicial(guardado);
-        Biblioteca biblioteca = bibliotecaService.crearBibliotecaInicial(guardado);
-
-        guardado.setPerfil(perfil);
-        guardado.setBiblioteca(biblioteca);
-
-        usuarioRepository.save(guardado);
 
         return usuarioMapper.toDTO(guardado);
     }
+
 
     // METODOS LÓGICA DE NEGOCIO
     // agregar un usuario a lista de usuarios favoritos de un usuario

@@ -1,7 +1,6 @@
 package com.biblioswipe.backend.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import com.biblioswipe.backend.dto.PerfilDTO;
 import com.biblioswipe.backend.dto.PerfilUpdateDTO;
@@ -22,6 +21,7 @@ public class PerfilService {
     private final UsuarioRepository usuarioRepository;
     private final PerfilMapper perfilMapper;
 
+    @Autowired
     public PerfilService(
             PerfilRepository perfilRepository,
             UsuarioRepository usuarioRepository,

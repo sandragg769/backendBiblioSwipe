@@ -1,21 +1,16 @@
 package com.biblioswipe.backend.service;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+;
 
 
 import com.biblioswipe.backend.dto.BibliotecaDTO;
-import com.biblioswipe.backend.dto.LibroCreateDTO;
-import com.biblioswipe.backend.dto.LibroDTO;
 import com.biblioswipe.backend.mapper.BibliotecaMapper;
-import com.biblioswipe.backend.mapper.LibroMapper;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Libro;
 import com.biblioswipe.backend.model.Usuario;
 import com.biblioswipe.backend.repository.BibliotecaRepository;
 import com.biblioswipe.backend.repository.LibroRepository;
 import com.biblioswipe.backend.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -27,6 +22,7 @@ public class BibliotecaService {
     private final LibroRepository libroRepository;
     private final BibliotecaMapper bibliotecaMapper;
 
+    @Autowired
     public BibliotecaService(
             BibliotecaRepository bibliotecaRepository,
             UsuarioRepository usuarioRepository,

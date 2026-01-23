@@ -2,6 +2,7 @@ package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.CategoriaDTO;
 import com.biblioswipe.backend.service.CategoriaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class CategoriaController {
 
     private final CategoriaService categoriaService;
 
+    @Autowired
     public CategoriaController(CategoriaService categoriaService) {
         this.categoriaService = categoriaService;
     }

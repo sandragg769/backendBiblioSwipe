@@ -2,6 +2,7 @@ package com.biblioswipe.backend.mapper;
 
 import com.biblioswipe.backend.dto.BibliotecaDTO;
 import com.biblioswipe.backend.model.Biblioteca;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ public class BibliotecaMapper {
 
     private final LibroMapper libroMapper;
 
+    @Autowired
     public BibliotecaMapper(LibroMapper libroMapper) {
         this.libroMapper = libroMapper;
     }

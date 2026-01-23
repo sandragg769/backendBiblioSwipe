@@ -1,7 +1,6 @@
 package com.biblioswipe.backend.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.biblioswipe.backend.dto.LibroCreateDTO;
@@ -10,6 +9,7 @@ import com.biblioswipe.backend.mapper.LibroMapper;
 import com.biblioswipe.backend.model.Categoria;
 import com.biblioswipe.backend.repository.CategoriaRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +24,7 @@ public class LibroService {
     private final CategoriaRepository categoriaRepository;
     private final LibroMapper libroMapper;
 
-
+    @Autowired
     public LibroService(LibroRepository libroRepository,
                         CategoriaRepository categoriaRepository,
                         LibroMapper libroMapper) {

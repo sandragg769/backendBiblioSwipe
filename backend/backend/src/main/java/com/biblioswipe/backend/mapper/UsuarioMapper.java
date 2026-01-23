@@ -2,12 +2,14 @@ package com.biblioswipe.backend.mapper;
 
 import com.biblioswipe.backend.dto.UsuarioDTO;
 import com.biblioswipe.backend.model.Usuario;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UsuarioMapper {
     private final PerfilMapper perfilMapper;
 
+    @Autowired
     public UsuarioMapper(PerfilMapper perfilMapper) {
         this.perfilMapper = perfilMapper;
     }

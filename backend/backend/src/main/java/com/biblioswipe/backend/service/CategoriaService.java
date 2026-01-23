@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.biblioswipe.backend.dto.CategoriaDTO;
 import com.biblioswipe.backend.mapper.CategoriaMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ public class CategoriaService {
     private final CategoriaRepository categoriaRepository;
     private final CategoriaMapper categoriaMapper;
 
+    @Autowired
     public CategoriaService(CategoriaRepository categoriaRepository,
                             CategoriaMapper categoriaMapper) {
         this.categoriaRepository = categoriaRepository;

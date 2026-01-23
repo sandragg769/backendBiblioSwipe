@@ -2,6 +2,7 @@ package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.BibliotecaDTO;
 import com.biblioswipe.backend.service.BibliotecaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,7 @@ public class BibliotecaController {
 
     private final BibliotecaService bibliotecaService;
 
+    @Autowired
     public BibliotecaController(BibliotecaService bibliotecaService) {
         this.bibliotecaService = bibliotecaService;
     }

@@ -23,9 +23,9 @@ public class Perfil {
     private String fotoPerfil;
 
     // relación usuario 1:1
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    @JsonIgnore
+    // TENÍA EL FETCH EAGER ANTES DE CAMBIAR POR EXCEPTION DEL BACK DE SANDRA
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     private Usuario usuario;
 
     // constructores

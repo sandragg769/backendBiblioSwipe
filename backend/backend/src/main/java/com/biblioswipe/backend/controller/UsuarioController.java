@@ -2,6 +2,7 @@ package com.biblioswipe.backend.controller;
 
 import com.biblioswipe.backend.dto.*;
 import com.biblioswipe.backend.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
+    @Autowired
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
     }

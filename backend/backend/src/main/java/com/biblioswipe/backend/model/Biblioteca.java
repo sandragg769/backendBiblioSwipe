@@ -17,8 +17,10 @@ public class Biblioteca {
     private Long id;
 
     // relación 1:1 con usuario
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    // TENÍA EL FETCH LAZY ANTES DE CAMBIAR POR EXCEPTION DEL BACK DE SANDRA
+    // Y SE HA AÑADIDO JSONIGNORE
+    @OneToOne
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
     @JsonIgnore
     private Usuario usuario;
 

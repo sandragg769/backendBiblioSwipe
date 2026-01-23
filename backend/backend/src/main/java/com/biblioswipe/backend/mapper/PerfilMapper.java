@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PerfilMapper {
+
     public PerfilDTO toDTO(Perfil perfil) {
         if (perfil == null) return null;
         return new PerfilDTO(

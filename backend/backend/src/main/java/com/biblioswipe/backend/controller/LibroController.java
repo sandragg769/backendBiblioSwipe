@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.biblioswipe.backend.dto.LibroCreateDTO;
 import com.biblioswipe.backend.dto.LibroDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ public class LibroController {
 
     private final LibroService libroService;
 
+    @Autowired
     public LibroController(LibroService libroService) {
         this.libroService = libroService;
     }

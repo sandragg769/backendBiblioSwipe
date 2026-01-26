@@ -11,6 +11,7 @@ public class PerfilDTO {
     private String ciudad;
     private String fotoPerfil;
     // private UsuarioDTO usuario;
+    public PerfilDTO(){}
 
     public PerfilDTO(
             Long perfilId,
@@ -52,6 +53,30 @@ public class PerfilDTO {
 
     public String getFotoPerfil() {
         return fotoPerfil;
+    }
+
+    public void setPerfilId(Long perfilId) {
+        this.perfilId = perfilId;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void setApellidos(String apellidos) {
+        this.apellidos = apellidos;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public void setFotoPerfil(String fotoPerfil) {
+        this.fotoPerfil = fotoPerfil;
     }
 
 }

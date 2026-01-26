@@ -7,6 +7,7 @@ import com.biblioswipe.backend.mapper.UsuarioMapper;
 import com.biblioswipe.backend.model.Biblioteca;
 import com.biblioswipe.backend.model.Perfil;
 import com.biblioswipe.backend.model.Usuario;
+import com.biblioswipe.backend.repository.PerfilRepository;
 import com.biblioswipe.backend.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
@@ -29,18 +30,21 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final PerfilMapper perfilMapper;
     private final BibliotecaMapper bibliotecaMapper;
+    private final PerfilRepository perfilRepository;
 
     @Autowired
     public UsuarioService(
             UsuarioRepository usuarioRepository,
             UsuarioMapper usuarioMapper,
             PerfilMapper perfilMapper,
-            BibliotecaMapper bibliotecaMapper
+            BibliotecaMapper bibliotecaMapper,
+            PerfilRepository perfilRepository
     ) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.perfilMapper = perfilMapper;
         this.bibliotecaMapper = bibliotecaMapper;
+        this.perfilRepository = perfilRepository;
     }
 
     // METODOS CRUD
@@ -70,8 +74,12 @@ public class UsuarioService {
         usuario.setEmail(dto.getEmail());
         usuario.setPassword(dto.getPassword());
 
+        Usuario usuario2= usuarioRepository.save(usuario);
         Perfil perfil = new Perfil();
-        perfil.setUsuario(usuario);
+        perfil.setUsuario(usuario2);
+        perfilRepository.save(perfil);
+        
+        
 
         Biblioteca biblioteca = new Biblioteca();
         biblioteca.setUsuario(usuario);

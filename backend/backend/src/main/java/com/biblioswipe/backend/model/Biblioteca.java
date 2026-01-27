@@ -1,14 +1,13 @@
+// Archivo: com.biblioswipe.backend.model.Biblioteca.java
 package com.biblioswipe.backend.model;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-// En Biblioteca.java
 @Data
 @Entity
 public class Biblioteca {
@@ -17,21 +16,22 @@ public class Biblioteca {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "usuarioId", nullable = false, unique = true)
+    @JoinColumn(name = "usuario_id", nullable = false, unique = true) // Corregido snake_case
     @JsonIgnore
     @EqualsAndHashCode.Exclude
     private Usuario usuario;
 
-    // --- RECOMENDADOS ---
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    // --- SECCIÓN: FUTURAS LECTURAS ---
+    @ManyToMany(fetch = FetchType.EAGER) // Cambiado a EAGER para asegurar carga en perfil
     @JoinTable(
-        name = "biblioteca_libros_futuras",
+        name = "biblioteca_libros_futuras_lecturas", // Unificado con SQL
         joinColumns = @JoinColumn(name = "biblioteca_id"),
         inverseJoinColumns = @JoinColumn(name = "libro_id")
     )
     private Set<Libro> librosFuturasLecturas = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    // --- SECCIÓN: LEÍDOS ---
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "biblioteca_libros_leidos",
         joinColumns = @JoinColumn(name = "biblioteca_id"),
@@ -39,7 +39,8 @@ public class Biblioteca {
     )
     private Set<Libro> librosLeidos = new HashSet<>();
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    // --- SECCIÓN: RECOMENDADOS ---
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "biblioteca_libros_recomendados",
         joinColumns = @JoinColumn(name = "biblioteca_id"),
@@ -47,14 +48,6 @@ public class Biblioteca {
     )
     private Set<Libro> librosRecomendados = new HashSet<>();
 
-
-    // constructores
-    public Biblioteca() {
-    }
-
-    public Biblioteca(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-
+    public Biblioteca() {}
+    public Biblioteca(Usuario usuario) { this.usuario = usuario; }
 }

@@ -6,7 +6,9 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+// En Biblioteca.java
 @Data
 @Entity
 public class Biblioteca {
@@ -14,23 +16,37 @@ public class Biblioteca {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // relación 1:1 con usuario
-    // TENÍA EL FETCH LAZY ANTES DE CAMBIAR POR EXCEPTION DEL BACK DE SANDRA
-    // Y SE HA AÑADIDO JSONIGNORE
     @OneToOne
-    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    @JoinColumn(name = "usuarioId", nullable = false, unique = true)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Usuario usuario;
 
-    // tres listas de libros (relación N:M con tabla intermedia)
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Libro> librosRecomendados = new HashSet<>();
+    // --- RECOMENDADOS ---
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "biblioteca_libros_futuras",
+        joinColumns = @JoinColumn(name = "biblioteca_id"),
+        inverseJoinColumns = @JoinColumn(name = "libro_id")
+    )
+    private Set<Libro> librosFuturasLecturas = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "biblioteca_libros_leidos",
+        joinColumns = @JoinColumn(name = "biblioteca_id"),
+        inverseJoinColumns = @JoinColumn(name = "libro_id")
+    )
     private Set<Libro> librosLeidos = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Libro> librosFuturasLecturas = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "biblioteca_libros_recomendados",
+        joinColumns = @JoinColumn(name = "biblioteca_id"),
+        inverseJoinColumns = @JoinColumn(name = "libro_id")
+    )
+    private Set<Libro> librosRecomendados = new HashSet<>();
+
 
     // constructores
     public Biblioteca() {

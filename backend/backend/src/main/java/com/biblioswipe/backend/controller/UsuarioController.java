@@ -27,7 +27,7 @@ public class UsuarioController {
     @PostMapping("/register")
     public ResponseEntity<UsuarioDTO> register(@RequestBody UsuarioRegisterDTO dto) {
         // Usamos CREATED (201) porque estamos creando un recurso nuevo
-        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.register(dto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.agregarUsuario(dto));
     }
 
     @GetMapping("/{id}")

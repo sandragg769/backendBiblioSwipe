@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -32,15 +33,18 @@ public class Libro {
     // NO debe conocer bibliotecas
     @ManyToMany(mappedBy = "librosRecomendados", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Biblioteca> bibliotecasRecomendados;
 
     // NO debe conocer bibliotecas
     @ManyToMany(mappedBy = "librosLeidos", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Biblioteca> bibliotecasLeidos;
 
     @ManyToMany(mappedBy = "librosFuturasLecturas", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Biblioteca> bibliotecasFuturasLecturas;
 
     // constructores

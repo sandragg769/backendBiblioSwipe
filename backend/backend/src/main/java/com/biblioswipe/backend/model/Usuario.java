@@ -6,10 +6,11 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "usuario_id"
+        property = "usuarioId"
 )
 //representa los datos y las entidades
 @Data
@@ -17,7 +18,7 @@ import lombok.Data;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long usuario_id;
+    private Long usuarioId;
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -49,6 +50,7 @@ public class Usuario {
 
     @ManyToMany(mappedBy = "usuariosFavoritos", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Usuario> esFavoritoDe = new HashSet<>();
 
     // constructores

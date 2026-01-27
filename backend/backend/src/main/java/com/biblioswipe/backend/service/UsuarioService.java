@@ -64,33 +64,35 @@ public class UsuarioService {
 
     // crea un usuario, perfil y biblioteca vacía, (registro)
     // BIEN
-    public UsuarioDTO register(UsuarioRegisterDTO dto) {
-
-        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ya registrado");
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setEmail(dto.getEmail());
-        usuario.setPassword(dto.getPassword());
-
-        Usuario usuario2= usuarioRepository.save(usuario);
-        Perfil perfil = new Perfil();
-        perfil.setUsuario(usuario2);
-        perfilRepository.save(perfil);
-        
-        
-
-        Biblioteca biblioteca = new Biblioteca();
-        biblioteca.setUsuario(usuario);
-
-        usuario.setPerfil(perfil);
-        usuario.setBiblioteca(biblioteca);
-
-        Usuario guardado = usuarioRepository.save(usuario);
-
-        return usuarioMapper.toDTO(guardado);
+   @Transactional
+public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
+    // 1️⃣ Verificar si el email ya existe
+    if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ya registrado");
     }
+
+    // 2️⃣ Crear usuario
+    Usuario usuario = new Usuario();
+    usuario.setEmail(dto.getEmail());
+    usuario.setPassword(dto.getPassword()); // Nota: usar BCrypt en producción
+
+    // 3️⃣ Crear perfil y asignarlo al usuario
+    Perfil perfil = new Perfil();
+    perfil.setUsuario(usuario);       // Relación bidireccional
+    usuario.setPerfil(perfil);
+
+    // 4️⃣ Crear biblioteca y asignarla al usuario
+    Biblioteca biblioteca = new Biblioteca();
+    biblioteca.setUsuario(usuario);   // Relación bidireccional
+    usuario.setBiblioteca(biblioteca);
+
+    // 5️⃣ Guardar usuario (cascade guardará perfil y biblioteca)
+    Usuario guardado = usuarioRepository.save(usuario);
+
+    // 6️⃣ Devolver DTO
+    return usuarioMapper.toDTO(guardado);
+}
+
 
 
     // METODOS LÓGICA DE NEGOCIO

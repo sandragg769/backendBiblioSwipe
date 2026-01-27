@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -27,7 +28,8 @@ public class Perfil {
     // relación usuario 1:1
     // TENÍA EL FETCH EAGER ANTES DE CAMBIAR POR EXCEPTION DEL BACK DE SANDRA
     @OneToOne
-    @JoinColumn(name = "usuario_id", nullable = false, unique = true)
+    @JoinColumn(name = "usuarioId", nullable = false, unique = true)
+    @EqualsAndHashCode.Exclude
     private Usuario usuario;
 
     // constructores

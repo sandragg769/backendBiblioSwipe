@@ -12,7 +12,7 @@ public class UsuarioMatchDTO {
     private long coincidencias;
 
     public UsuarioMatchDTO(Usuario usuario, long coincidencias) {
-        this.usuarioId = usuario.getUsuario_id();
+        this.usuarioId = usuario.getUsuarioId();
         this.coincidencias = coincidencias;
     }
 

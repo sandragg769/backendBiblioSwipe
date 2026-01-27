@@ -17,7 +17,7 @@ public class UsuarioMapper {
     public UsuarioDTO toDTO(Usuario usuario) {
         if (usuario == null) return null;
         return new UsuarioDTO(
-                usuario.getUsuario_id(),
+                usuario.getUsuarioId(),
                 usuario.getEmail(),
                 perfilMapper.toDTO(usuario.getPerfil()) // Faltaba este parámetro
         );

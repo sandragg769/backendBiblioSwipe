@@ -32,7 +32,7 @@ public class PerfilService {
     @Transactional(readOnly = true)
     public PerfilDTO getPerfilByUsuario(Long usuarioId) {
         // 🎯 Llama al método con @Query de tu PerfilRepository
-        Perfil perfil = perfilRepository.findByUsuario_Id(usuarioId)
+        Perfil perfil = perfilRepository.findByUsuario_UsuarioId(usuarioId)
                 .orElseThrow(() ->
                         new RuntimeException("Perfil no encontrado para usuarioId: " + usuarioId)
                 );
@@ -46,7 +46,7 @@ public class PerfilService {
     @Transactional
     public PerfilDTO actualizarPerfil(Long usuarioId, PerfilUpdateDTO dto) {
         // 🎯 Llama al método con @Query para encontrar el perfil a editar
-        Perfil perfil = perfilRepository.findByUsuario_Id(usuarioId)
+        Perfil perfil = perfilRepository.findByUsuario_UsuarioId(usuarioId)
                 .orElseThrow(() ->
                         new RuntimeException("Perfil no encontrado para usuarioId: " + usuarioId)
                 );

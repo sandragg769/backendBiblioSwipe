@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -21,11 +22,13 @@ public class Categoria {
     // relación 1:N con libro (muchos libros pueden tener la misma categoría)
     @OneToMany(mappedBy = "categoria", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Libro> libros = new HashSet<>();
 
     // relación N:M con usuario
     @ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
     @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Set<Usuario> usuarios = new HashSet<>();
 
     // constructor

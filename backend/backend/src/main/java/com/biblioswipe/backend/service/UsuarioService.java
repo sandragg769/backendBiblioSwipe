@@ -38,8 +38,7 @@ public class UsuarioService {
             UsuarioMapper usuarioMapper,
             PerfilMapper perfilMapper,
             BibliotecaMapper bibliotecaMapper,
-            PerfilRepository perfilRepository
-    ) {
+            PerfilRepository perfilRepository) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.perfilMapper = perfilMapper;
@@ -58,42 +57,39 @@ public class UsuarioService {
         return usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Usuario no encontrado"
-                ));
+                        "Usuario no encontrado"));
     }
 
     // crea un usuario, perfil y biblioteca vacía, (registro)
     // BIEN
-   @Transactional
-public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
-    // 1️⃣ Verificar si el email ya existe
-    if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ya registrado");
+    @Transactional
+    public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
+        // 1️⃣ Verificar si el email ya existe
+        if (usuarioRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ya registrado");
+        }
+
+        // 2️⃣ Crear usuario
+        Usuario usuario = new Usuario();
+        usuario.setEmail(dto.getEmail());
+        usuario.setPassword(dto.getPassword()); // Nota: usar BCrypt en producción
+
+        // 3️⃣ Crear perfil y asignarlo al usuario
+        Perfil perfil = new Perfil();
+        perfil.setUsuario(usuario); // Relación bidireccional
+        usuario.setPerfil(perfil);
+
+        // 4️⃣ Crear biblioteca y asignarla al usuario
+        Biblioteca biblioteca = new Biblioteca();
+        biblioteca.setUsuario(usuario); // Relación bidireccional
+        usuario.setBiblioteca(biblioteca);
+
+        // 5️⃣ Guardar usuario (cascade guardará perfil y biblioteca)
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        // 6️⃣ Devolver DTO
+        return usuarioMapper.toDTO(guardado);
     }
-
-    // 2️⃣ Crear usuario
-    Usuario usuario = new Usuario();
-    usuario.setEmail(dto.getEmail());
-    usuario.setPassword(dto.getPassword()); // Nota: usar BCrypt en producción
-
-    // 3️⃣ Crear perfil y asignarlo al usuario
-    Perfil perfil = new Perfil();
-    perfil.setUsuario(usuario);       // Relación bidireccional
-    usuario.setPerfil(perfil);
-
-    // 4️⃣ Crear biblioteca y asignarla al usuario
-    Biblioteca biblioteca = new Biblioteca();
-    biblioteca.setUsuario(usuario);   // Relación bidireccional
-    usuario.setBiblioteca(biblioteca);
-
-    // 5️⃣ Guardar usuario (cascade guardará perfil y biblioteca)
-    Usuario guardado = usuarioRepository.save(usuario);
-
-    // 6️⃣ Devolver DTO
-    return usuarioMapper.toDTO(guardado);
-}
-
-
 
     // METODOS LÓGICA DE NEGOCIO
     // agregar un usuario a lista de usuarios favoritos de un usuario
@@ -104,8 +100,7 @@ public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
         if (usuarioId.equals(favoritoId)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
-                    "No puedes agregarte a ti mismo a favoritos"
-            );
+                    "No puedes agregarte a ti mismo a favoritos");
         }
 
         Usuario usuario = getUsuarioEntity(usuarioId);
@@ -131,20 +126,17 @@ public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
         Usuario usuario = usuarioRepository.findByEmail(dto.getEmail())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.UNAUTHORIZED,
-                        "Credenciales incorrectas"
-                ));
+                        "Credenciales incorrectas"));
 
         // Nota: en producción usar BCrypt
         if (!usuario.getPassword().equals(dto.getPassword())) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
-                    "Credenciales incorrectas"
-            );
+                    "Credenciales incorrectas");
         }
 
         return usuarioMapper.toDTO(usuario);
     }
-
 
     // FILTRADO CATEGORÍA
     public List<UsuarioDTO> buscarUsuariosPorCategoria(String nombreCategoria) {
@@ -154,24 +146,21 @@ public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
                 .filter(u -> contarCategoria(u.getBiblioteca(), nombreCategoria) > 0)
                 .sorted((u1, u2) -> Long.compare(
                         contarCategoria(u2.getBiblioteca(), nombreCategoria),
-                        contarCategoria(u1.getBiblioteca(), nombreCategoria)
-                ))
+                        contarCategoria(u1.getBiblioteca(), nombreCategoria)))
                 .map(usuarioMapper::toDTO)
                 .toList();
     }
 
     private long contarCategoria(Biblioteca biblioteca, String nombreCategoria) {
         return Stream.of(
-                        biblioteca.getLibrosLeidos(),
-                        biblioteca.getLibrosRecomendados(),
-                        biblioteca.getLibrosFuturasLecturas()
-                )
+                biblioteca.getLibrosLeidos(),
+                biblioteca.getLibrosRecomendados(),
+                biblioteca.getLibrosFuturasLecturas())
                 .flatMap(Set::stream)
                 .filter(l -> l.getCategoria() != null)
                 .filter(l -> l.getCategoria().getNombre().equalsIgnoreCase(nombreCategoria))
                 .count();
     }
-
 
     // otros getters
     public PerfilDTO getPerfil(Long usuarioId) {
@@ -182,6 +171,14 @@ public UsuarioDTO agregarUsuario(UsuarioRegisterDTO dto) {
     public BibliotecaDTO getBiblioteca(Long usuarioId) {
         Usuario usuario = getUsuarioEntity(usuarioId);
         return bibliotecaMapper.toDTO(usuario.getBiblioteca());
+    }
+
+    // Añadir en UsuarioService.java
+    public List<UsuarioDTO> listarTodos() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(usuarioMapper::toDTO)
+                .toList();
     }
 
 }

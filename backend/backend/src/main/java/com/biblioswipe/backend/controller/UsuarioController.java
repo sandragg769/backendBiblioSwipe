@@ -40,8 +40,7 @@ public class UsuarioController {
     @PostMapping("/{id}/favoritos/{favoritoId}")
     public ResponseEntity<Void> addFavorito(
             @PathVariable Long id,
-            @PathVariable Long favoritoId
-    ) {
+            @PathVariable Long favoritoId) {
         usuarioService.agregarFavorito(id, favoritoId);
         return ResponseEntity.noContent().build(); // 204 No Content es estándar para void
     }
@@ -53,7 +52,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getFavoritos(id));
     }
 
-    //LOGIN
+    // LOGIN
     @PostMapping("/login")
     public ResponseEntity<UsuarioDTO> login(@RequestBody LoginRequestDTO dto) {
         // Ahora pasamos el objeto DTO completo al service
@@ -74,6 +73,12 @@ public class UsuarioController {
     @GetMapping("/{id}/biblioteca")
     public ResponseEntity<BibliotecaDTO> getBiblioteca(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.getBiblioteca(id));
+    }
+
+    // Añadir en UsuarioController.java
+    @GetMapping("")
+    public ResponseEntity<List<UsuarioDTO>> getAllUsuarios() {
+        return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
 }

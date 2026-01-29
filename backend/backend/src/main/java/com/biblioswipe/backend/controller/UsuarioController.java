@@ -45,12 +45,17 @@ public class UsuarioController {
         return ResponseEntity.noContent().build(); // 204 No Content es estándar para void
     }
 
-    // GET con ID de usuario los favoritos
-    // Ver favoritos de un usuario
-    @GetMapping("/{id}/favoritos")
-    public ResponseEntity<List<UsuarioDTO>> getFavoritos(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.getFavoritos(id));
-    }
+    /**
+     * // GET con ID de usuario los favoritos
+     * // Ver favoritos de un usuario
+     * @GetMapping("/{id}/favoritos")
+     * public ResponseEntity<List<UsuarioDTO>> getFavoritos(@PathVariable Long id) {
+     * return ResponseEntity.ok(usuarioService.getFavoritos(id));
+     * }
+     * 
+     * @param dto
+     * @return
+     */
 
     // LOGIN
     @PostMapping("/login")
@@ -81,4 +86,18 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    @GetMapping("/{id}/favoritos")
+    public ResponseEntity<List<UsuarioSwipeDTO>> getFavoritos(@PathVariable Long id) {
+
+        List<UsuarioSwipeDTO> favoritos = usuarioService.getFavoritosParaSwipe(id);
+        return ResponseEntity.ok(favoritos);
+    }
+
+    /**
+     * @GetMapping("/{id}/favoritos/notificaciones")
+    public ResponseEntity<List<NotificacionesFavoritosDTO>> getNotificaciones(@PathVariable Long id) {
+        // Busca cambios de biblioteca de los 'favoritoId' vinculados a este 'id'
+        return ResponseEntity.ok(usuarioService.obtenerNotificacionesDeFavoritos(id));
+    }
+     */
 }

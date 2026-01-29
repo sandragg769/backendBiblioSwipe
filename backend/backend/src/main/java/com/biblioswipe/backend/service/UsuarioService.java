@@ -150,6 +150,17 @@ public class UsuarioService {
                 .map(usuarioMapper::toDTO)
                 .toList();
     }
+public List<UsuarioSwipeDTO> getFavoritosParaSwipe(Long usuarioId) {
+    Usuario usuario = getUsuarioEntity(usuarioId);
+    return usuario.getUsuariosFavoritos().stream()
+            .map(fav -> new UsuarioSwipeDTO(
+                    fav.getUsuarioId(), // 🎯 Si da error, prueba con fav.id si es público o revisa el getter
+                    fav.getPerfil().getNombre(),
+                    fav.getPerfil().getCiudad(),
+                    fav.getPerfil().getFotoPerfil()
+            ))
+            .toList();
+}
 
     private long contarCategoria(Biblioteca biblioteca, String nombreCategoria) {
         return Stream.of(
@@ -161,6 +172,7 @@ public class UsuarioService {
                 .filter(l -> l.getCategoria().getNombre().equalsIgnoreCase(nombreCategoria))
                 .count();
     }
+    
 
     // otros getters
     public PerfilDTO getPerfil(Long usuarioId) {
@@ -180,5 +192,14 @@ public class UsuarioService {
                 .map(usuarioMapper::toDTO)
                 .toList();
     }
+/**
+ *     public List<NotificacionesFavoritosDTO> obtenerNotificacionesDeFavoritos(Long id) {
+    // Por ahora, devolvemos una lista de prueba para que veas que funciona la pestaña
+    return List.of(
+        new NotificacionesFavoritosDTO(1L, "Emi", "ha actualizado su biblioteca", "Hoy, 10:30"),
+        new NotificacionesFavoritosDTO(2L, "Sandra", "recomienda un nuevo libro", "Ayer, 18:45")
+    );
+}
+ */
 
 }

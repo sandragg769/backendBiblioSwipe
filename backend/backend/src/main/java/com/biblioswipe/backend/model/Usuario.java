@@ -7,18 +7,28 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "usuarioId"
-)
-//representa los datos y las entidades
-@Data
+
+
 @Entity
+@Getter 
+@Setter
+@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) 
+@JsonIdentityInfo(
+    generator = ObjectIdGenerators.PropertyGenerator.class,
+    property = "usuarioId"
+)
 public class Usuario {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include 
     private Long usuarioId;
+
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -27,14 +37,12 @@ public class Usuario {
     @JsonIgnore
     private String password;
 
-    // relación 1:1 con perfil
-    // QUITAR JSONIGNORE DESPUÉS DE EXCEPTION DE SANDRA
-    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+   @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude // Evita que al imprimir el usuario se intente imprimir el perfil
     private Perfil perfil;
 
-    // relación 1:1 con la biblioteca
-    // QUITAR JSONIGNORE DESPUÉS DE EXCEPTION DE SANDRA
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     private Biblioteca biblioteca;
 
     // relación N:M con categorias
@@ -43,9 +51,9 @@ public class Usuario {
     @JsonIgnore
     private Set<Categoria> categorias = new HashSet<>();
 
-    // Relación 1:N reflexiva (usuarios favoritos)
-    @ManyToMany(fetch = FetchType.LAZY)
+   @ManyToMany(fetch = FetchType.LAZY)
     @JsonIgnore
+    @ToString.Exclude
     private Set<Usuario> usuariosFavoritos = new HashSet<>();
 
     @ManyToMany(mappedBy = "usuariosFavoritos", fetch = FetchType.LAZY)

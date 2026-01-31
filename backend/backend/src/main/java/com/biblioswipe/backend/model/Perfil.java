@@ -10,12 +10,20 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
 @Entity
+@Getter 
+@Setter
+@ToString
+
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Perfil {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include 
     private Long perfil_id;
 
     private String nombre;
@@ -25,11 +33,9 @@ public class Perfil {
     private String ciudad;
     private String fotoPerfil;
 
-    // relación usuario 1:1
-    // TENÍA EL FETCH EAGER ANTES DE CAMBIAR POR EXCEPTION DEL BACK DE SANDRA
     @OneToOne
     @JoinColumn(name = "usuarioId", nullable = false, unique = true)
-    @EqualsAndHashCode.Exclude
+    @ToString.Exclude 
     private Usuario usuario;
 
     // constructores

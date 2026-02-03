@@ -7,17 +7,24 @@ import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "usuarioId"
 )
 //representa los datos y las entidades
-@Data
 @Entity
+@Getter //  Usar Getter y Setter por separado
+@Setter
+@ToString(exclude = {"perfil", "biblioteca", "categorias", "usuariosFavoritos", "esFavoritoDe"})
+@EqualsAndHashCode(onlyExplicitlyIncluded = true) // 🎯 Solo lo que marquemos entrará en el Hash
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include // 🎯 Solo el ID identifica al usuario
     private Long usuarioId;
 
     @Column(nullable = false, unique = true)

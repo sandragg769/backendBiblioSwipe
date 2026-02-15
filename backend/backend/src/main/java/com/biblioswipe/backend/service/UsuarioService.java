@@ -59,7 +59,16 @@ public class UsuarioService {
                         HttpStatus.NOT_FOUND,
                         "Usuario no encontrado"));
     }
-
+@Transactional
+public void actualizarFoto(Long id, String nombreArchivo) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+    
+    if (usuario.getPerfil() != null) {
+        usuario.getPerfil().setFotoPerfil(nombreArchivo);
+        usuarioRepository.save(usuario);
+    }
+}
     // crea un usuario, perfil y biblioteca vacía, (registro)
     // BIEN
     @Transactional

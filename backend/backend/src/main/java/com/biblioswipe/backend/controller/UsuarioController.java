@@ -6,7 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 //controller es para exponer de los endpoints
@@ -43,6 +49,31 @@ public class UsuarioController {
             @PathVariable Long favoritoId) {
         usuarioService.agregarFavorito(id, favoritoId);
         return ResponseEntity.noContent().build(); // 204 No Content es estándar para void
+    }
+
+    @PostMapping("/{id}/upload-foto")
+    public ResponseEntity<String> uploadFoto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
+        try {
+            // 1. Crear la carpeta si no existe
+            Path directory = Paths.get("uploads");
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            // 2. Nombre de archivo único
+            String filename = "perfil_" + id + "_" + System.currentTimeMillis() + ".jpg";
+            Path path = directory.resolve(filename);
+
+            // 3. Guardar el archivo físico
+            Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+
+            // 4. USAR TU SERVICE CORREGIDO 🎯
+            usuarioService.actualizarFoto(id, filename);
+
+            return ResponseEntity.ok(filename);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar la imagen");
+        }
     }
 
     /**
@@ -95,9 +126,11 @@ public class UsuarioController {
 
     /**
      * @GetMapping("/{id}/favoritos/notificaciones")
-    public ResponseEntity<List<NotificacionesFavoritosDTO>> getNotificaciones(@PathVariable Long id) {
-        // Busca cambios de biblioteca de los 'favoritoId' vinculados a este 'id'
-        return ResponseEntity.ok(usuarioService.obtenerNotificacionesDeFavoritos(id));
-    }
+     * public ResponseEntity<List<NotificacionesFavoritosDTO>>
+     * getNotificaciones(@PathVariable Long id) {
+     * // Busca cambios de biblioteca de los 'favoritoId' vinculados a este 'id'
+     * return
+     * ResponseEntity.ok(usuarioService.obtenerNotificacionesDeFavoritos(id));
+     * }
      */
 }

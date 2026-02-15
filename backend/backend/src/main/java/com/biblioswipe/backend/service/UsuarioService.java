@@ -181,7 +181,15 @@ public List<UsuarioSwipeDTO> getFavoritosParaSwipe(Long usuarioId) {
                 .filter(l -> l.getCategoria().getNombre().equalsIgnoreCase(nombreCategoria))
                 .count();
     }
+    @Transactional
+public void eliminarFavorito(Long usuarioId, Long favoritoId) {
+    Usuario usuario = getUsuarioEntity(usuarioId);
+    Usuario favorito = getUsuarioEntity(favoritoId);
     
+    // 🎯 Elimina la relación en la lista de favoritos
+    usuario.getUsuariosFavoritos().remove(favorito); //
+    usuarioRepository.save(usuario);
+}
 
     // otros getters
     public PerfilDTO getPerfil(Long usuarioId) {

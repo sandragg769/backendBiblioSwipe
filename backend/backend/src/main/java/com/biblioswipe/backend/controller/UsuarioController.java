@@ -51,6 +51,14 @@ public class UsuarioController {
         return ResponseEntity.noContent().build(); // 204 No Content es estándar para void
     }
 
+    @DeleteMapping("/{id}/favoritos/{favoritoId}") // 🎯 Asegurarse de que sea DeleteMapping
+    public ResponseEntity<Void> eliminarFavorito(
+            @PathVariable Long id,
+            @PathVariable Long favoritoId) {
+        usuarioService.eliminarFavorito(id, favoritoId);
+        return ResponseEntity.noContent().build();
+    }
+
     @PostMapping("/{id}/upload-foto")
     public ResponseEntity<String> uploadFoto(@PathVariable Long id, @RequestParam("file") MultipartFile file) {
         try {

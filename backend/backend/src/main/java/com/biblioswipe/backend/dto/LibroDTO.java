@@ -4,6 +4,7 @@ package com.biblioswipe.backend.dto;
 public class LibroDTO {
 
     private Long id;
+    @NotBlank(message = "El título es obligatorio")
     private String titulo;
     private String autor;
     private String portada;

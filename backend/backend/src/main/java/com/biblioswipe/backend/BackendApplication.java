@@ -7,7 +7,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 // escuchar peticiones HTTP) por defecto el puerto 8080, con esto ya podemos usar postman o navegador o frontend
 @SpringBootApplication
 public class BackendApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
     }

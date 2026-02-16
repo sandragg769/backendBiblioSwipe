@@ -163,7 +163,7 @@ public List<UsuarioSwipeDTO> getFavoritosParaSwipe(Long usuarioId) {
     Usuario usuario = getUsuarioEntity(usuarioId);
     return usuario.getUsuariosFavoritos().stream()
             .map(fav -> new UsuarioSwipeDTO(
-                    fav.getUsuarioId(), // 🎯 Si da error, prueba con fav.id si es público o revisa el getter
+                    fav.getUsuarioId(), // Si da error, prueba con fav.id si es público o revisa el getter
                     fav.getPerfil().getNombre(),
                     fav.getPerfil().getCiudad(),
                     fav.getPerfil().getFotoPerfil()
@@ -186,7 +186,7 @@ public void eliminarFavorito(Long usuarioId, Long favoritoId) {
     Usuario usuario = getUsuarioEntity(usuarioId);
     Usuario favorito = getUsuarioEntity(favoritoId);
     
-    // 🎯 Elimina la relación en la lista de favoritos
+    //  Elimina la relación en la lista de favoritos
     usuario.getUsuariosFavoritos().remove(favorito); //
     usuarioRepository.save(usuario);
 }

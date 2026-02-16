@@ -1,6 +1,7 @@
 package com.biblioswipe.backend.model;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -42,5 +43,10 @@ public class Perfil {
         this.fechaNacimiento = fechaNacimiento;
         this.ciudad = ciudad;
         this.fotoPerfil = fotoPerfil;
+    }
+    @Transient // Esto indica que NO se crea una columna en la base de datos
+    public int getEdad() {
+        if (this.fechaNacimiento == null) return 0;
+        return Period.between(this.fechaNacimiento, LocalDate.now()).getYears();
     }
 }

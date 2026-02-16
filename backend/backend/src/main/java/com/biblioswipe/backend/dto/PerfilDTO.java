@@ -1,6 +1,7 @@
 package com.biblioswipe.backend.dto;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 public class PerfilDTO {
 
@@ -49,6 +50,12 @@ public class PerfilDTO {
 
     public String getCiudad() {
         return ciudad;
+    }
+    public int getEdad() {
+        if (this.fechaNacimiento == null) {
+            return 0;
+        }
+        return Period.between(this.fechaNacimiento, LocalDate.now()).getYears();
     }
 
     public String getFotoPerfil() {
